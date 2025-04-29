@@ -32,7 +32,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
 
     try:
-        version_locale = "1.4"
+        version_locale = "1.5"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
@@ -100,7 +100,7 @@ def log_console(msg):
     print(msg)
 
 # === Interface ===
-VERSION = "1.4"
+VERSION = "1.5"
 root = tk.Tk()
 root.title("Mods Manager - Les ZAMIS")
 root.resizable(False, False)
