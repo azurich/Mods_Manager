@@ -31,12 +31,12 @@ def verifier_mise_a_jour():
 
     try:
         version_locale = "1.0"
-        r = requests.get(url_version, timeout=5)
+        r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
             if version_distante != version_locale:
                 if messagebox.askyesno("Mise à jour disponible", "Une nouvelle version est disponible. Voulez-vous mettre à jour maintenant ?"):
-                    r_script = requests.get(url_script, timeout=10)
+                    r_script = requests.get(url_script, timeout=10, verify=False)
                     if r_script.status_code == 200:
                         chemin_fichier = os.path.abspath(__file__)
                         with open(chemin_fichier, 'wb') as f:
@@ -97,6 +97,7 @@ def log_console(msg):
 
 
 # === Interface ===
+VERSION = "1.0"
 root = tk.Tk()
 root.title("Mods Manager - Les ZAMIS")
 root.resizable(False, False)
@@ -151,6 +152,10 @@ def style_bouton(widget):
     widget.bind("<Leave>", lambda e: widget.config(bg=BOX_COLOR))
 
 
+# === Version affichée ===
+version_label = tk.Label(root, text=f"Version : {VERSION}", bg=BG_COLOR, fg=FG_COLOR, font=("Segoe UI", 9))
+version_label.pack(pady=(10, 0))
+
 # === Frame Boutons ===
 frame_central = tk.Frame(root, bg=BG_COLOR)
 frame_central.pack(pady=(30, 20))
@@ -175,7 +180,7 @@ style.configure("TProgressbar",
                 darkcolor="#4a90e2")
 
 progress_var = tk.DoubleVar()
-progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, style="TProgressbar")
+progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, style="TProgressbar", length=500)
 progress_bar.pack(fill=tk.X, padx=40, pady=(10, 30))
 
 # === Console ===
