@@ -9,7 +9,7 @@ MODS_FOLDER = os.path.join(os.path.expanduser("~"), "curseforge", "Minecraft", "
 OLD_MODS = [
     'BoatBreakFix-Universal-1.0.2.jar',
     'curios-forge-5.4.6+1.20.1.jar'
-    'TravelersBackpack-1.20.1-9.1.7'
+    'TravelersBackpack-1.20.1-9.1.7.jar'
 ]
 NEW_MODS = {
     'curios-forge-5.11.0+1.20.1.jar': 'https://cdn.modrinth.com/data/vvuO3ImH/versions/QBtodtmR/curios-forge-5.11.0%2B1.20.1.jar',
