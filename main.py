@@ -23,6 +23,30 @@ CONSOLE_FG = "#ffffff"
 HOVER_COLOR = "#3a3a5c"
 
 # === Fonctions ===
+
+# Fonction de mise à jour automatique
+def verifier_mise_a_jour():
+    url_version = "https://raw.githubusercontent.com/azurich/updater/main/version.txt"
+    url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
+
+    try:
+        version_locale = "1.0"
+        r = requests.get(url_version, timeout=5)
+        if r.status_code == 200:
+            version_distante = r.text.strip()
+            if version_distante != version_locale:
+                if messagebox.askyesno("Mise à jour disponible", "Une nouvelle version est disponible. Voulez-vous mettre à jour maintenant ?"):
+                    r_script = requests.get(url_script, timeout=10)
+                    if r_script.status_code == 200:
+                        chemin_fichier = os.path.abspath(__file__)
+                        with open(chemin_fichier, 'wb') as f:
+                            f.write(r_script.content)
+                        messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Veuillez relancer l'application.")
+                        root.destroy()
+                    else:
+                        messagebox.showerror("Erreur", "Impossible de télécharger la mise à jour.")
+    except Exception as e:
+        log_console(f"Erreur de mise à jour : {e}")
 def supprimer_anciens_mods():
     log_console("\n[Suppression des anciens mods]")
     if not os.path.exists(MODS_FOLDER):
@@ -166,6 +190,7 @@ console.tag_config('green', foreground='lightgreen')
 console.configure(state='disabled')
 
 # === Démarrage ===
+verifier_mise_a_jour()
 root.after(100, lambda: log_console(f"Chemin mods : {MODS_FOLDER}"))
 root.after(200, lambda: log_console("Application prête. Cliquez sur un bouton pour démarrer."))
 
