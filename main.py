@@ -44,7 +44,7 @@ def verifier_mise_a_jour():
                         with open(chemin_fichier, 'wb') as f:
                             f.write(r_script.content)
                         messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Redémarrage automatique...")
-                        subprocess.Popen([sys.executable, os.path.abspath(__file__)])
+                        subprocess.Popen(["updater.exe"])
                         root.destroy()
                     else:
                         messagebox.showerror("Erreur", "Impossible de télécharger la mise à jour.")
