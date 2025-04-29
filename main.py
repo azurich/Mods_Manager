@@ -9,10 +9,13 @@ MODS_FOLDER = os.path.join(os.path.expanduser("~"), "curseforge", "Minecraft", "
 OLD_MODS = [
     'BoatBreakFix-Universal-1.0.2.jar',
     'curios-forge-5.4.6+1.20.1.jar'
+    'TravelersBackpack-1.20.1-9.1.7'
 ]
 NEW_MODS = {
     'curios-forge-5.11.0+1.20.1.jar': 'https://cdn.modrinth.com/data/vvuO3ImH/versions/QBtodtmR/curios-forge-5.11.0%2B1.20.1.jar',
     'corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar': 'https://cdn.modrinth.com/data/pJGcKPh1/versions/kNCc37SZ/corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar'
+    'sophisticatedcore-1.20.1-0.6.26.668.jar': 'https://mediafilez.forgecdn.net/files/5729/525/sophisticatedcore-1.20.1-0.6.26.668.jar'
+    'sophisticatedbackpacks-1.20.1-3.20.7.1075.jar': 'https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar'
 }
 
 # === Couleurs fixes style Windows 11 sombre bleuté ===
@@ -32,7 +35,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
 
     try:
-        version_locale = "1.5"
+        version_locale = "1.6"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
@@ -89,7 +92,7 @@ def telecharger_nouveaux_mods():
         
 def log_console(msg):
     console.configure(state='normal')
-    if "Supprimé" in msg or "Erreur en supprimant" in msg or "(ignoré)" in msg:
+    if "Supprimé" in msg or "Erreur en supprimant" in msg or "(ignoré)" in msg or "(❌ Erreur en supprimant)" in msg:
         console.insert(tk.END, msg + '\n', 'red')
     elif "Installé" in msg or "Téléchargement" in msg:
         console.insert(tk.END, msg + '\n', 'green')
@@ -100,7 +103,7 @@ def log_console(msg):
     print(msg)
 
 # === Interface ===
-VERSION = "1.5"
+VERSION = "1.6"
 root = tk.Tk()
 root.title("Mods Manager - Les ZAMIS")
 root.resizable(False, False)
