@@ -30,7 +30,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
 
     try:
-        version_locale = "1.0"
+        version_locale = "1.2"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
