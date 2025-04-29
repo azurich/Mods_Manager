@@ -30,7 +30,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
 
     try:
-        version_locale = "1.2"
+        version_locale = "1.3"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
@@ -82,10 +82,10 @@ def telecharger_nouveaux_mods():
         count += 1
         progress_var.set((count / total) * 100)
         progress_bar.update()
-
+        
 def log_console(msg):
     console.configure(state='normal')
-    if "Supprimé" in msg or "Erreur en supprimant" in msg:
+    if "Supprimé" in msg or "Erreur en supprimant" in msg or "(ignoré)" in msg:
         console.insert(tk.END, msg + '\n', 'red')
     elif "Installé" in msg or "Téléchargement" in msg:
         console.insert(tk.END, msg + '\n', 'green')
@@ -95,9 +95,8 @@ def log_console(msg):
     console.see(tk.END)
     print(msg)
 
-
 # === Interface ===
-VERSION = "1.0"
+VERSION = "1.3"
 root = tk.Tk()
 root.title("Mods Manager - Les ZAMIS")
 root.resizable(False, False)
