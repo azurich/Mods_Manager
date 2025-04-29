@@ -23,6 +23,8 @@ CONSOLE_FG = "#ffffff"
 HOVER_COLOR = "#3a3a5c"
 
 # === Fonctions ===
+import sys
+import subprocess
 
 # Fonction de mise à jour automatique
 def verifier_mise_a_jour():
@@ -30,7 +32,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/updater/main/main.py"
 
     try:
-        version_locale = "1.3"
+        version_locale = "1.4"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
@@ -41,12 +43,14 @@ def verifier_mise_a_jour():
                         chemin_fichier = os.path.abspath(__file__)
                         with open(chemin_fichier, 'wb') as f:
                             f.write(r_script.content)
-                        messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Veuillez relancer l'application.")
+                        messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Redémarrage automatique...")
+                        subprocess.Popen([sys.executable, os.path.abspath(__file__)])
                         root.destroy()
                     else:
                         messagebox.showerror("Erreur", "Impossible de télécharger la mise à jour.")
     except Exception as e:
         log_console(f"Erreur de mise à jour : {e}")
+
 def supprimer_anciens_mods():
     log_console("\n[Suppression des anciens mods]")
     if not os.path.exists(MODS_FOLDER):
@@ -96,7 +100,7 @@ def log_console(msg):
     print(msg)
 
 # === Interface ===
-VERSION = "1.3"
+VERSION = "1.4"
 root = tk.Tk()
 root.title("Mods Manager - Les ZAMIS")
 root.resizable(False, False)
