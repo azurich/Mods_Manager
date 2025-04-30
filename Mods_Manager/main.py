@@ -3,9 +3,46 @@ from tkinter import messagebox, scrolledtext, ttk
 import os
 import requests
 import ctypes
+import subprocess
 
-# === Config ===
-MODS_FOLDER = os.path.join(os.path.expanduser("~"), "curseforge", "Minecraft", "Instances", "Les ZAMIS", "mods")
+# === Configuration de la fenêtre principale ===
+root = tk.Tk()
+root.title("Mods Manager")
+root.resizable(False, False)
+
+# === Couleurs et thèmes ===
+BG_COLOR = "#1f1f2e"
+FG_COLOR = "#ffffff"
+BOX_COLOR = "#292942"
+CONSOLE_FG = "#ffffff"
+HOVER_COLOR = "#3a3a5c"
+
+root.configure(bg=BG_COLOR)
+largeur_fenetre, hauteur_fenetre = 780, 700
+x = (root.winfo_screenwidth() // 2) - (largeur_fenetre // 2)
+y = (root.winfo_screenheight() // 2) - (hauteur_fenetre // 2)
+root.geometry(f"{largeur_fenetre}x{hauteur_fenetre}+{x}+{y}")
+
+# === Icônes et mode sombre ===
+try:
+    root.iconbitmap(os.path.join("assets", "app.ico"))
+except: pass
+
+try:
+    hwnd = ctypes.windll.user32.GetParent(root.winfo_id())
+    ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, 20, ctypes.byref(ctypes.c_int(1)), ctypes.sizeof(ctypes.c_int))
+except: pass
+
+try:
+    delete_icon = tk.PhotoImage(file="assets/delete_icon.png")
+    install_icon = tk.PhotoImage(file="assets/install_icon.png")
+    choose_icon = tk.PhotoImage(file="assets/folder_icon.png")
+except:
+    delete_icon = install_icon = choose_icon = None
+
+# === Constantes ===
+MODS_FOLDER = None
+VERSION = "1.10"
 OLD_MODS = [
     'BoatBreakFix-Universal-1.0.2.jar',
     'curios-forge-5.4.6+1.20.1.jar',
@@ -18,125 +55,8 @@ NEW_MODS = {
     'sophisticatedbackpacks-1.20.1-3.20.7.1075.jar': 'https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar'
 }
 
-# === Couleurs fixes style Windows 11 sombre bleuté ===
-BG_COLOR = "#1f1f2e"
-FG_COLOR = "#ffffff"
-BOX_COLOR = "#292942"
-CONSOLE_FG = "#ffffff"
-HOVER_COLOR = "#3a3a5c"
+# === Utilitaires ===
 
-# === Fonctions ===
-import sys
-import subprocess
-
-# Fonction de mise à jour automatique
-def verifier_mise_a_jour():
-    url_version = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/version.txt"
-    url_script = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/main_update.exe"
-
-    try:
-        version_locale = "1.9"
-        r = requests.get(url_version, timeout=5, verify=False)
-        if r.status_code == 200:
-            version_distante = r.text.strip()
-            if version_distante != version_locale:
-                if messagebox.askyesno("Mise à jour disponible", "Une nouvelle version est disponible. Voulez-vous mettre à jour maintenant ?"):
-                    r_script = requests.get(url_script, timeout=10, verify=False)
-                    if r_script.status_code == 200:
-                        with open("main_update.exe", "wb") as f:
-                            f.write(r_script.content)
-                        messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Redémarrage automatique...")
-                        subprocess.Popen(["updater.exe"])
-                        root.destroy()
-                    else:
-                        messagebox.showerror("Erreur", "Impossible de télécharger la mise à jour.")
-    except Exception as e:
-        log_console(f"Erreur de mise à jour : {e}")
-
-def supprimer_anciens_mods():
-    log_console("\n[Suppression des anciens mods]")
-    if not os.path.exists(MODS_FOLDER):
-        log_console(f"❌ Dossier introuvable : {MODS_FOLDER}")
-        return
-    for mod in OLD_MODS:
-        chemin_mod = os.path.join(MODS_FOLDER, mod)
-        if os.path.exists(chemin_mod):
-            try:
-                os.remove(chemin_mod)
-                log_console(f"✔ Supprimé : {mod}")
-            except Exception as e:
-                log_console(f"❌ Erreur en supprimant {mod} : {e}")
-        else:
-            log_console(f"(ignoré) {mod} introuvable")
-
-def telecharger_nouveaux_mods():
-    log_console("\n[Téléchargement des nouveaux mods]")
-    if not os.path.exists(MODS_FOLDER):
-        log_console(f"❌ Dossier introuvable : {MODS_FOLDER}")
-        return
-    total = len(NEW_MODS)
-    count = 0
-    for nom_fichier, url in NEW_MODS.items():
-        try:
-            chemin_mod = os.path.join(MODS_FOLDER, nom_fichier)
-            r = requests.get(url, verify=False)
-            with open(chemin_mod, 'wb') as f:
-                f.write(r.content)
-            log_console(f"✔ Installé : {nom_fichier}")
-        except Exception as e:
-            log_console(f"❌ Erreur lors du téléchargement de {nom_fichier} : {e}")
-        count += 1
-        progress_var.set((count / total) * 100)
-        progress_bar.update()
-        
-def log_console(msg):
-    console.configure(state='normal')
-    if "Supprimé" in msg or "Erreur en supprimant" in msg or "(ignoré)" in msg:
-        console.insert(tk.END, msg + '\n', 'red')
-    elif "Installé" in msg or "Téléchargement" in msg:
-        console.insert(tk.END, msg + '\n', 'green')
-    else:
-        console.insert(tk.END, msg + '\n')
-    console.configure(state='disabled')
-    console.see(tk.END)
-    print(msg)
-
-# === Interface ===
-VERSION = "1.9"
-root = tk.Tk()
-root.title("Mods Manager")
-root.resizable(False, False)
-root.configure(bg=BG_COLOR)
-
-# Calcul pour centrer la fenêtre
-largeur_fenetre = 640
-hauteur_fenetre = 600
-ecran_largeur = root.winfo_screenwidth()
-ecran_hauteur = root.winfo_screenheight()
-x = (ecran_largeur // 2) - (largeur_fenetre // 2)
-y = (ecran_hauteur // 2) - (hauteur_fenetre // 2)
-root.geometry(f"{largeur_fenetre}x{hauteur_fenetre}+{x}+{y}")
-
-try:
-    root.iconbitmap(os.path.join("assets", "app.ico"))
-except:
-    pass
-
-try:
-    hwnd = ctypes.windll.user32.GetParent(root.winfo_id())
-    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-    dark_mode = ctypes.c_int(1)
-    ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(dark_mode), ctypes.sizeof(dark_mode))
-except:
-    pass
-
-try:
-    delete_icon = tk.PhotoImage(file="assets/delete_icon.png")
-    install_icon = tk.PhotoImage(file="assets/install_icon.png")
-except:
-    delete_icon = install_icon = None
-
-# === Styles modernes ===
 def style_bouton(widget):
     widget.configure(
         bg=BOX_COLOR,
@@ -156,37 +76,130 @@ def style_bouton(widget):
     widget.bind("<Enter>", lambda e: widget.config(bg=HOVER_COLOR))
     widget.bind("<Leave>", lambda e: widget.config(bg=BOX_COLOR))
 
+def log_console(msg):
+    console.configure(state='normal')
+    color = 'green' if "Installé" in msg or "Téléchargement" in msg else 'red' if "Supprimé" in msg or "Erreur" in msg or "(ignoré)" in msg else None
+    console.insert(tk.END, msg + '\n', color)
+    console.configure(state='disabled')
+    console.see(tk.END)
 
-# === Version affichée ===
-version_label = tk.Label(root, text=f"Version : {VERSION}", bg=BG_COLOR, fg=FG_COLOR, font=("Segoe UI", 9))
-version_label.pack(pady=(10, 0))
+# === Fonctions principales ===
+def lister_instances():
+    base_path = os.path.join(os.path.expanduser("~"), "curseforge", "Minecraft", "Instances")
+    dossiers = [d for d in os.listdir(base_path) if d.startswith("Les ZAMIS")]
+    return [os.path.join(base_path, d, "mods") for d in dossiers if os.path.isdir(os.path.join(base_path, d, "mods"))]
 
-# === Frame Boutons ===
-frame_central = tk.Frame(root, bg=BG_COLOR)
-frame_central.pack(pady=(30, 20))
+def verifier_mise_a_jour():
+    url_version = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/version.txt"
+    url_script = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/main_update.exe"
+    try:
+        r = requests.get(url_version, timeout=5, verify=False)
+        if r.status_code == 200 and r.text.strip() != VERSION:
+            if messagebox.askyesno("Mise à jour disponible", "Une nouvelle version est disponible. Voulez-vous mettre à jour maintenant ?"):
+                r_script = requests.get(url_script, timeout=10, verify=False)
+                if r_script.status_code == 200:
+                    with open("main_update.exe", "wb") as f:
+                        f.write(r_script.content)
+                    messagebox.showinfo("Mise à jour", "Mise à jour effectuée. Redémarrage automatique...")
+                    subprocess.Popen(["updater.exe"])
+                    root.destroy()
+    except Exception as e:
+        log_console(f"Erreur de mise à jour : {e}")
 
-bt_suppr = tk.Button(frame_central, text=" Supprimer les anciens mods", command=supprimer_anciens_mods, image=delete_icon)
+def supprimer_anciens_mods():
+    log_console("\n[Suppression des anciens mods]")
+    if not MODS_FOLDER or not os.path.exists(MODS_FOLDER):
+        log_console(f"❌ Dossier introuvable : {MODS_FOLDER}")
+        return
+    for mod in OLD_MODS:
+        chemin = os.path.join(MODS_FOLDER, mod)
+        try:
+            os.remove(chemin)
+            log_console(f"✔ Supprimé : {mod}")
+        except:
+            log_console(f"(ignoré) {mod} introuvable ou non supprimé")
+
+def telecharger_nouveaux_mods():
+    log_console("\n[Téléchargement des nouveaux mods]")
+    if not MODS_FOLDER or not os.path.exists(MODS_FOLDER):
+        log_console(f"❌ Dossier introuvable : {MODS_FOLDER}")
+        return
+    for i, (fichier, url) in enumerate(NEW_MODS.items(), 1):
+        try:
+            r = requests.get(url, verify=False)
+            with open(os.path.join(MODS_FOLDER, fichier), 'wb') as f:
+                f.write(r.content)
+            log_console(f"✔ Installé : {fichier}")
+        except Exception as e:
+            log_console(f"❌ Erreur lors du téléchargement de {fichier} : {e}")
+        progress_var.set((i / len(NEW_MODS)) * 100)
+        progress_bar_canvas.update()
+
+def choisir_instance():
+    global MODS_FOLDER
+    selected = instance_var.get()
+    for path in instances:
+        if os.path.basename(os.path.dirname(path)) == selected:
+            MODS_FOLDER = path
+            break
+    log_console(f"Chemin mods sélectionné : {MODS_FOLDER}")
+    try:
+        with open("last_instance.txt", "w") as f:
+            f.write(selected)
+    except Exception as e:
+        log_console(f"Erreur lors de la sauvegarde de l'instance : {e}")
+
+# === Interface utilisateur ===
+tk.Label(root, text=f"Mods Manager v{VERSION}", bg=BG_COLOR, fg=FG_COLOR, font=("Segoe UI", 12, "bold")).pack(pady=(15, 5))
+
+frame_top = tk.Frame(root, bg=BG_COLOR)
+frame_top.pack(pady=(20, 10), padx=20, fill=tk.X)
+
+instance_var = tk.StringVar()
+instances = lister_instances()
+instance_names = [os.path.basename(os.path.dirname(path)) for path in instances]
+
+frame_gauche = tk.Frame(frame_top, bg=BG_COLOR)
+frame_gauche.pack(side=tk.LEFT, expand=True, fill=tk.BOTH, padx=(0, 20))
+
+bt_choix = tk.Button(frame_gauche, text=" Choisir l'instance", command=choisir_instance, image=choose_icon, compound="left")
+style_bouton(bt_choix)
+bt_choix.pack(pady=(0, 10), fill=tk.X)
+
+instance_menu = ttk.Combobox(frame_gauche, textvariable=instance_var, values=instance_names, state="readonly", width=40)
+instance_menu.pack(fill=tk.X)
+
+frame_droite = tk.Frame(frame_top, bg=BG_COLOR)
+frame_droite.pack(side=tk.LEFT, expand=True, fill=tk.BOTH, padx=(20, 0))
+
+bt_suppr = tk.Button(frame_droite, text=" Supprimer les anciens mods", command=supprimer_anciens_mods, image=delete_icon)
 style_bouton(bt_suppr)
-bt_suppr.pack(pady=10)
+bt_suppr.pack(pady=(0, 10), fill=tk.X)
 
-bt_dl = tk.Button(frame_central, text=" Installer les nouveaux mods", command=telecharger_nouveaux_mods, image=install_icon)
+bt_dl = tk.Button(frame_droite, text=" Installer les nouveaux mods", command=telecharger_nouveaux_mods, image=install_icon)
 style_bouton(bt_dl)
-bt_dl.pack(pady=10)
+bt_dl.pack(fill=tk.X)
 
-# === Barre de progression modernisée et arrondie ===
+# === Progression personnalisée ===
 style = ttk.Style()
 style.theme_use('clam')
-style.configure("TProgressbar",
-                thickness=18,
-                troughcolor="#292942",
-                background="#4a90e2",
-                bordercolor="#1f1f2e",
-                lightcolor="#4a90e2",
-                darkcolor="#4a90e2")
+style.layout("TProgressbar", [('Horizontal.Progressbar.trough', {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})], 'sticky': 'nswe'})])
+style.configure("TProgressbar", thickness=60, troughcolor=BOX_COLOR, background="#4a90e2")
 
 progress_var = tk.DoubleVar()
-progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, style="TProgressbar", length=500)
-progress_bar.pack(fill=tk.X, padx=40, pady=(10, 30))
+progress_frame = tk.Frame(root, bg=BG_COLOR)
+progress_frame.pack(pady=(40, 30))
+
+progress_bar_canvas = tk.Canvas(progress_frame, height=25, width=700, bg=BOX_COLOR, bd=0, highlightthickness=0)
+progress_bar_canvas.pack(pady=(10, 20))
+progress_bar = progress_bar_canvas.create_rectangle(0, 0, 0, 25, fill="#4a90e2", width=0)
+
+def update_custom_progress(value):
+    width = progress_bar_canvas.winfo_width()
+    progress_bar_canvas.coords(progress_bar, 0, 0, int((value / 100) * width), 25)
+
+progress_bar_canvas.bind("<Configure>", lambda e: update_custom_progress(progress_var.get()))
+progress_var.trace_add("write", lambda *args: update_custom_progress(progress_var.get()))
 
 # === Console ===
 console_frame = tk.LabelFrame(root, text="Console", bg=BG_COLOR, fg=FG_COLOR, font=("Segoe UI", 10, "bold"))
@@ -199,9 +212,20 @@ console.tag_config('red', foreground='red')
 console.tag_config('green', foreground='lightgreen')
 console.configure(state='disabled')
 
-# === Démarrage ===
-verifier_mise_a_jour()
-root.after(100, lambda: log_console(f"Chemin mods : {MODS_FOLDER}"))
-root.after(200, lambda: log_console("Application prête. Cliquez sur un bouton pour démarrer."))
+# === Restauration instance sauvegardée (placée ici car console définie) ===
+try:
+    if os.path.exists("last_instance.txt"):
+        with open("last_instance.txt", "r") as f:
+            saved = f.read().strip()
+            if saved in instance_names:
+                instance_var.set(saved)
+                for path in instances:
+                    if os.path.basename(os.path.dirname(path)) == saved:
+                        MODS_FOLDER = path
+                        break
+                log_console(f"Instance restaurée automatiquement : {MODS_FOLDER}")
+except Exception as e:
+    log_console(f"Erreur lors du chargement de l'instance sauvegardée : {e}")
 
+verifier_mise_a_jour()
 root.mainloop()
