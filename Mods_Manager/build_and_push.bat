@@ -39,4 +39,13 @@ git push
 
 echo.
 echo Mise a jour poussee sur GitHub avec succes !
+
+:: === Nettoyage ===
+echo.
+echo Nettoyage des fichiers...
+rmdir /s /q build
+rmdir /s /q dist
+del /q *.spec
+echo Nettoyage des fichiers poubelle...
+
 pause
