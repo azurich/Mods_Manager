@@ -1,4 +1,4 @@
-# 🧩 Mods Manager - Les ZAMIS
+# 🧩 Mods Manager
 
 Application Windows graphique pour gérer automatiquement les mods Minecraft d'une instance CurseForge.  
 Elle supprime les anciens mods, installe les nouveaux, et se met à jour toute seule !
@@ -82,14 +82,6 @@ Ou simplement :
 
 Clique sur **« Informations complémentaires »** ➜ **« Exécuter quand même »**  
 C'est normal pour toute app non signée. Il n'y a **aucun danger**.
-
----
-
-## 👤 Auteur
-
-Développé par **Quentin Baudry**  
-🎮 Passionné de jeux vidéo & Formule 1  
-💼 Administrateur Systèmes & Réseaux
 
 ---
 
