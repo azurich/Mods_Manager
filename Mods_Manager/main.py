@@ -24,6 +24,37 @@ y = (root.winfo_screenheight() // 2) - (hauteur_fenetre // 2)
 root.geometry(f"{largeur_fenetre}x{hauteur_fenetre}+{x}+{y}")
 
 # === Icônes et mode sombre ===
+os.makedirs("assets", exist_ok=True)
+
+# Copier une icône par défaut si elle n'existe pas déjà
+from shutil import copyfile
+
+default_folder_icon = "default_assets/folder_icon.png"
+user_icon_path = "assets/folder_icon.png"
+
+if not os.path.exists(user_icon_path):
+    try:
+        os.makedirs("assets", exist_ok=True)
+        if os.path.exists(default_folder_icon):
+            copyfile(default_folder_icon, user_icon_path)
+    except Exception as e:
+        print(f"Erreur lors de la copie de l'icône par défaut : {e}")
+
+# Vérification et téléchargement des icônes manquantes depuis GitHub
+import urllib.request
+
+def ensure_asset(filename):
+    path = os.path.join("assets", filename)
+    if not os.path.exists(path):
+        url = f"https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/assets/{filename}"
+        try:
+            urllib.request.urlretrieve(url, path)
+        except Exception as e:
+            print(f"Erreur lors du téléchargement de {filename} : {e}")
+
+for icon in ["folder_icon.png", "delete_icon.png", "install_icon.png", "app.ico"]:
+    ensure_asset(icon)
+
 try:
     root.iconbitmap(os.path.join("assets", "app.ico"))
 except: pass
@@ -42,7 +73,7 @@ except:
 
 # === Constantes ===
 MODS_FOLDER = None
-VERSION = "1.10"
+VERSION = "1.11"
 OLD_MODS = [
     'BoatBreakFix-Universal-1.0.2.jar',
     'curios-forge-5.4.6+1.20.1.jar',
