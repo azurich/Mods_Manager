@@ -117,7 +117,7 @@ def log_console(msg):
 # === Fonctions principales ===
 def lister_instances():
     base_path = os.path.join(os.path.expanduser("~"), "curseforge", "Minecraft", "Instances")
-    dossiers = [d for d in os.listdir(base_path) if d.startswith("Les ZAMIS")]
+    dossiers = [d for d in os.listdir(base_path) if d.lower().startswith("les zamis")]
     return [os.path.join(base_path, d, "mods") for d in dossiers if os.path.isdir(os.path.join(base_path, d, "mods"))]
 
 def verifier_mise_a_jour():
