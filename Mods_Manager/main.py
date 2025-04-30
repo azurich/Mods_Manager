@@ -35,7 +35,7 @@ def verifier_mise_a_jour():
     url_script = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/main_update.exe"
 
     try:
-        version_locale = "1.8"
+        version_locale = "1.9"
         r = requests.get(url_version, timeout=5, verify=False)
         if r.status_code == 200:
             version_distante = r.text.strip()
@@ -102,7 +102,7 @@ def log_console(msg):
     print(msg)
 
 # === Interface ===
-VERSION = "1.8"
+VERSION = "1.9"
 root = tk.Tk()
 root.title("Mods Manager")
 root.resizable(False, False)
