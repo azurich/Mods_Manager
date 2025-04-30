@@ -3,7 +3,7 @@ setlocal
 
 :: === CONFIG À MODIFIER ICI ===
 set "GIT_REPO_PATH=C:\Users\qbaudry\Documents\Mods_Manager\Mods_Manager"
-set "VERSION=1.8"
+set "VERSION=1.9"
 
 :: === Nettoyage ===
 echo.
