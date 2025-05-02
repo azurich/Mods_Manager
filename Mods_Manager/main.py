@@ -73,7 +73,7 @@ except:
 
 # === Constantes ===
 MODS_FOLDER = None
-VERSION = "1.11"
+VERSION = "1.12"
 OLD_MODS = [
     'BoatBreakFix-Universal-1.0.2.jar',
     'curios-forge-5.4.6+1.20.1.jar',
@@ -83,7 +83,10 @@ NEW_MODS = {
     'curios-forge-5.11.0+1.20.1.jar': 'https://cdn.modrinth.com/data/vvuO3ImH/versions/QBtodtmR/curios-forge-5.11.0%2B1.20.1.jar',
     'corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar': 'https://cdn.modrinth.com/data/pJGcKPh1/versions/kNCc37SZ/corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar',
     'sophisticatedcore-1.20.1-0.6.26.668.jar': 'https://mediafilez.forgecdn.net/files/5729/525/sophisticatedcore-1.20.1-0.6.26.668.jar',
-    'sophisticatedbackpacks-1.20.1-3.20.7.1075.jar': 'https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar'
+    'sophisticatedbackpacks-1.20.1-3.20.7.1075.jar': 'https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar',
+	 'sodiumdynamiclights-forge-1.0.10-1.20.1.jar': 'https://cdn.modrinth.com/data/PxQSWIcD/versions/I156ee3A/sodiumdynamiclights-forge-1.0.10-1.20.1.jar',
+    'curiouslanterns-1.20.1-1.3.6.jar': 'https://cdn.modrinth.com/data/cE5SLYbv/versions/q3pQ4N0L/curiouslanterns-1.20.1-1.3.6.jar',
+    'radiantgear-forge-2.2.0%2B1.20.1.jar': 'https://cdn.modrinth.com/data/AtT9wm5O/versions/dQfDugX5/radiantgear-forge-2.2.0%2B1.20.1.jar'
 }
 
 # === Utilitaires ===
@@ -109,7 +112,7 @@ def style_bouton(widget):
 
 def log_console(msg):
     console.configure(state='normal')
-    color = 'green' if "Installé" in msg or "Téléchargement" in msg else 'red' if "Supprimé" in msg or "Erreur" in msg or "(ignoré)" in msg else None
+    color = 'green' if "Installé" in msg or "Téléchargement" in msg or "téléchargé" in msg else 'red' if "Supprimé" in msg or "Erreur" in msg or "(ignoré)" in msg else None
     console.insert(tk.END, msg + '\n', color)
     console.configure(state='disabled')
     console.see(tk.END)
@@ -165,6 +168,17 @@ def telecharger_nouveaux_mods():
             log_console(f"❌ Erreur lors du téléchargement de {fichier} : {e}")
         progress_var.set((i / len(NEW_MODS)) * 100)
         progress_bar_canvas.update()
+
+# === Ajout du fichier config après installation des mods ===
+    try:
+        config_dir = os.path.join(os.path.dirname(MODS_FOLDER), "config")
+        os.makedirs(config_dir, exist_ok=True)
+        config_url = "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/sodiumdynamiclights-client.toml"
+        config_path = os.path.join(config_dir, "sodiumdynamiclights-client.toml")
+        urllib.request.urlretrieve(config_url, config_path)
+        log_console("✔ Fichier de configuration téléchargé et placé dans 'config'.")
+    except Exception as e:
+        log_console(f"❌ Erreur lors du téléchargement du fichier config : {e}")
 
 def choisir_instance():
     global MODS_FOLDER
