@@ -131,7 +131,7 @@ export default function HomePage() {
     📦 Télécharger
   </a>
   <a
-    href="https://discord.gg/YOUR_INVITE"
+    href="https://discord.gg/Hvvgh2CuvE"
     target="_blank"
     className="min-w-[200px] text-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:scale-105 hover:brightness-110 hover:shadow-[0_0_12px_rgba(236,72,153,0.6)] rounded-full text-lg font-bold transition-all shadow-lg"
   >
@@ -228,7 +228,7 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <div className="text-base font-bold text-white"> Made by Azurich with 💖</div>
-          <div className="text-gray-400 mt-1">Last updated: May 15th, 2025</div>
+          <div className="text-gray-400 mt-1">Last updated: May 26th, 2025</div>
         </motion.footer>
       </div>
       <button
