@@ -112,7 +112,8 @@ export default function HomePage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-7xl font-extrabold tracking-tight mb-16 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-500 leading-tight pt-10 pb-4">
+          <h1 className="text-7xl font-extrabold tracking-tight mb-16 bg-clip-text text-transparent animate-gradient bg-[length:300%_300%] bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500
+ leading-tight pt-10 pb-4">
   Mods Manager
 </h1>
           <div className="flex flex-wrap justify-center gap-4 mt-6">
@@ -131,7 +132,7 @@ export default function HomePage() {
     📦 Télécharger
   </a>
   <a
-    href="https://discord.gg/Hvvgh2CuvE"
+    href="https://discord.gg/YOUR_INVITE"
     target="_blank"
     className="min-w-[200px] text-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:scale-105 hover:brightness-110 hover:shadow-[0_0_12px_rgba(236,72,153,0.6)] rounded-full text-lg font-bold transition-all shadow-lg"
   >
@@ -227,7 +228,7 @@ export default function HomePage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="text-base font-bold text-white"> Made by Azurich with 💖</div>
+          <div className="text-base font-bold text-white">Made by Azurich with 💖</div>
           <div className="text-gray-400 mt-1">Last updated: May 26th, 2025</div>
         </motion.footer>
       </div>
