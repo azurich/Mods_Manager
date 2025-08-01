@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mods Manager</title>
+    <link rel="stylesheet" href="styles-simple.css">
+</head>
+<body class="h-full overflow-hidden">
+    <!-- Theme Toggle (Hidden by default, managed by system) -->
+    <div id="themeToggle" class="fixed top-4 right-4 z-50 hidden">
+        <button id="themeBtn" class="p-2 rounded-lg bg-card hover:bg-accent border border-border transition-colors">
+            <span id="themeIcon" class="w-5 h-5 block"></span>
+        </button>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="flex flex-col h-full bg-background text-foreground">
+        <!-- Header avec gradient -->
+        <header class="flex-shrink-0 header-gradient border-b border-border">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div id="appIcon" class="w-8 h-8 text-primary"></div>
+                        <h1 class="text-2xl font-bold text-gradient">Mods Manager</h1>
+                        <span class="badge badge-info">v1.12</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="refreshBtn" class="p-2 rounded-lg hover:bg-accent transition-colors" title="Actualiser les instances (Ctrl+R)">
+                            <span id="refreshIcon" class="w-4 h-4 block"></span>
+                        </button>
+                        <button id="settingsBtn" class="p-2 rounded-lg hover:bg-accent transition-colors" title="Paramètres">
+                            <span id="settingsIcon" class="w-4 h-4 block"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex-1 p-6 space-y-6 overflow-auto scrollbar-thin">
+                
+                <!-- Section Instance avec design moderne -->
+                <section class="space-y-4">
+                    <div class="bg-card border border-border rounded-xl p-6 shadow-sm hover-lift">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div id="folderIcon" class="w-5 h-5 text-primary"></div>
+                            <h2 class="text-lg font-semibold">Sélection de l'instance</h2>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="relative">
+                                <select id="instanceSelect" class="w-full select-input focus-ring">
+                                    <option value="">Chargement des instances...</option>
+                                </select>
+                                <div id="instanceLoading" class="absolute inset-0 bg-card rounded-lg loading-skeleton hidden"></div>
+                            </div>
+                            
+                            <div class="flex justify-center">
+                                <button id="chooseInstanceBtn" class="btn btn-primary space-x-2" disabled>
+                                    <span id="chooseIcon" class="w-4 h-4"></span>
+                                    <span>Choisir l'instance</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section Actions avec grid responsive -->
+                <section class="grid gap-6 responsive-grid" style="grid-template-columns: repeat(2, 1fr);"><!-- Mobile sera géré par CSS responsive -->
+                    <!-- Card Nettoyage -->
+                    <div class="card">
+                        <div class="text-center space-y-4">
+                            <div class="flex items-center justify-center space-x-2 mb-3">
+                                <div id="trashIcon" class="w-5 h-5 text-destructive"></div>
+                                <h3 class="text-lg font-semibold">Nettoyage</h3>
+                            </div>
+                            
+                            <p class="text-sm text-muted-foreground mb-4">
+                                Supprime les anciens mods obsolètes de votre instance
+                            </p>
+                            
+                            <button id="deleteModsBtn" class="btn btn-destructive w-full space-x-2" disabled>
+                                <span id="deleteIcon" class="w-4 h-4"></span>
+                                <span>Supprimer anciens mods</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card Installation -->
+                    <div class="card">
+                        <div class="text-center space-y-4">
+                            <div class="flex items-center justify-center space-x-2 mb-3">
+                                <div id="downloadIcon" class="w-5 h-5 text-green-600"></div>
+                                <h3 class="text-lg font-semibold">Installation</h3>
+                            </div>
+                            
+                            <p class="text-sm text-muted-foreground mb-4">
+                                Télécharge et installe les derniers mods disponibles
+                            </p>
+                            
+                            <button id="installModsBtn" class="btn btn-success w-full space-x-2" disabled>
+                                <span id="installIcon" class="w-4 h-4"></span>
+                                <span>Installer nouveaux mods</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section Progression (cachée par défaut) -->
+                <section id="progressSection" class="hidden animate-slide-up">
+                    <div class="card">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold">Progression</h3>
+                                <span id="progressPercentage" class="text-sm text-muted-foreground">0%</span>
+                            </div>
+                            
+                            <div id="progressBarContainer" class="progress-container">
+                                <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            
+                            <div id="currentAction" class="text-sm text-muted-foreground text-center hidden">
+                                Préparation...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Console Section (fixe en bas) -->
+            <section class="flex-shrink-0 bg-card border-t border-border">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <div id="terminalIcon" class="w-4 h-4 text-muted-foreground"></div>
+                            <h3 class="text-sm font-semibold">Console de logs</h3>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="clearConsoleBtn" class="text-xs px-2 py-1 rounded-lg hover:bg-accent transition-colors">
+                                Effacer
+                            </button>
+                            <button id="toggleConsoleBtn" class="text-xs px-2 py-1 rounded-lg hover:bg-accent transition-colors">
+                                Réduire
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="consoleContainer" class="transition-all">
+                        <!-- Sera rempli par le JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div id="notificationsContainer" class="fixed top-4 right-4 z-40 space-y-2 max-w-sm">
+        <!-- Les notifications seront ajoutées ici dynamiquement -->
+    </div>
+
+    <!-- Loading Overlay (pour les opérations longues) -->
+    <div id="loadingOverlay" class="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center hidden" style="background-color: rgba(255, 255, 255, 0.8);">
+        <div class="bg-card border border-border rounded-xl p-6 shadow-lg">
+            <div class="flex items-center space-x-3">
+                <div id="loadingSpinner" class="w-5 h-5 animate-spin text-primary"></div>
+                <span class="text-sm font-medium">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="components/icons.js"></script>
+    <script src="components/ui.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>
