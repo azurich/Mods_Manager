@@ -14,7 +14,8 @@ import {
   Settings,
   Loader2,
   Sun,
-  Moon
+  Moon,
+  Github
 } from 'lucide-react'
 
 interface MinecraftInstance {
@@ -397,7 +398,7 @@ export function ModsManager() {
               <h1 className="text-2xl font-bold">
                 Mods Manager
               </h1>
-              <Badge variant="secondary">v1.12</Badge>
+              <Badge variant="secondary">v2.1.0</Badge>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -549,7 +550,7 @@ export function ModsManager() {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Informations</h4>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p>Version: 1.12.0</p>
+                  <p>Version: 2.1.0</p>
                   <p>Développé par: Azurich</p>
                 </div>
               </div>
@@ -567,6 +568,21 @@ export function ModsManager() {
                     }}
                   >
                     Actualiser les instances
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      if (window.electronAPI?.openExternal) {
+                        window.electronAPI.openExternal('https://github.com/azurich/Mods_Manager')
+                      } else {
+                        window.open('https://github.com/azurich/Mods_Manager', '_blank')
+                      }
+                    }}
+                    className="flex items-center space-x-2"
+                  >
+                    <Github className="h-4 w-4" />
+                    <span>Voir sur GitHub</span>
                   </Button>
                 </div>
               </div>

@@ -43,5 +43,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Nettoyage des écouteurs
   removeAllListeners: (channel) => {
     ipcRenderer.removeAllListeners(channel);
-  }
+  },
+  
+  // Ouvrir des liens externes
+  openExternal: (url) => ipcRenderer.invoke('open-external', url)
 });

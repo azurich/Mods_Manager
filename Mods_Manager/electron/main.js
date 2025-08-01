@@ -10,7 +10,7 @@ const store = new Store();
 
 // Variables globales
 let mainWindow;
-const VERSION = '1.12.0';
+const VERSION = '2.1.0';
 
 // Fonction pour charger la configuration des mods
 function loadModsConfig() {
@@ -329,6 +329,11 @@ ipcMain.handle('restart-and-install', () => {
     if (!isDev) {
         autoUpdater.quitAndInstall();
     }
+});
+
+// Gestionnaire pour ouvrir des liens externes
+ipcMain.handle('open-external', async (event, url) => {
+    shell.openExternal(url);
 });
 
 // Événements de l'application
