@@ -5,8 +5,6 @@
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
 [![Electron](https://img.shields.io/badge/Electron-28.0.0-47848f.svg)](https://electronjs.org/)
 
-> **Gestionnaire de mods Minecraft moderne avec interface élégante**
-
 Un outil puissant et intuitif pour gérer vos mods Minecraft, avec système de mise à jour automatique et interface utilisateur moderne construite avec React et Shadcn UI.
 
 ![Screenshot](https://via.placeholder.com/800x500?text=Mods+Manager+Screenshot)
