@@ -5,48 +5,43 @@ const fs = require('fs-extra');
 const axios = require('axios');
 const Store = require('electron-store');
 
-// Système de logging (désactivé en production)
+// Système de logging toujours actif pour le support utilisateur
 const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('--dev');
-let logFilePath = null;
+const logFilePath = path.join(require('os').tmpdir(), 'mods-manager-debug.log');
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
 
-if (isDev) {
-    // Système de logging actif en développement seulement
-    logFilePath = path.join(require('os').tmpdir(), 'mods-manager-debug.log');
-    const originalConsoleLog = console.log;
-    const originalConsoleError = console.error;
-
-    function writeToLog(level, ...args) {
-        const timestamp = new Date().toISOString();
-        const message = args.map(arg => 
-            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-        ).join(' ');
-        const logEntry = `[${timestamp}] [${level}] ${message}\n`;
-        
-        try {
-            fs.appendFileSync(logFilePath, logEntry);
-        } catch (error) {
-            // Ignorer les erreurs de logging
-        }
-        
-        // Appeler aussi la console originale
-        if (level === 'ERROR') {
-            originalConsoleError(...args);
-        } else {
-            originalConsoleLog(...args);
-        }
-    }
-
-    // Remplacer console.log et console.error en dev
-    console.log = (...args) => writeToLog('INFO', ...args);
-    console.error = (...args) => writeToLog('ERROR', ...args);
-
-    // Nettoyer le fichier de log au démarrage
+function writeToLog(level, ...args) {
+    const timestamp = new Date().toISOString();
+    const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+    ).join(' ');
+    const logEntry = `[${timestamp}] [${level}] ${message}\n`;
+    
     try {
-        fs.writeFileSync(logFilePath, `=== DEMARRAGE MODS MANAGER ${new Date().toISOString()} ===\n`);
-        console.log('📝 Fichier de log créé:', logFilePath);
+        fs.appendFileSync(logFilePath, logEntry);
     } catch (error) {
-        console.error('❌ Impossible de créer le fichier de log:', error);
+        // Ignorer les erreurs de logging
     }
+    
+    // Appeler aussi la console originale
+    if (level === 'ERROR') {
+        originalConsoleError(...args);
+    } else {
+        originalConsoleLog(...args);
+    }
+}
+
+// Remplacer console.log et console.error
+console.log = (...args) => writeToLog('INFO', ...args);
+console.error = (...args) => writeToLog('ERROR', ...args);
+
+// Nettoyer le fichier de log au démarrage
+try {
+    fs.writeFileSync(logFilePath, `=== DEMARRAGE MODS MANAGER ${new Date().toISOString()} ===\n`);
+    console.log('📝 Fichier de log créé:', logFilePath);
+} catch (error) {
+    console.error('❌ Impossible de créer le fichier de log:', error);
 }
 
 // Configuration du store pour les paramètres
@@ -314,6 +309,7 @@ class SmartUpdater {
         this.repoUrl = 'https://api.github.com/repos/azurich/Mods_Manager';
         this.isUpdating = false;
         this.pendingUpdate = null;
+        this.lastNotifiedVersion = null; // Éviter les notifications en double
     }
 
     // Détecter l'architecture et le type d'installation
@@ -398,6 +394,9 @@ class SmartUpdater {
             return;
         }
 
+        const startTime = Date.now();
+        const minDuration = 1500; // Durée minimale de 1.5s pour voir l'état "checking"
+
         try {
             console.log('🚀 Démarrage vérification mise à jour');
             console.log('📱 Version actuelle:', this.currentVersion);
@@ -407,6 +406,15 @@ class SmartUpdater {
             
             console.log('🔄 Version disponible:', latestVersion);
             console.log('⚖️ Comparaison versions:', this.compareVersions(latestVersion, this.currentVersion));
+
+            // Calculer le temps restant pour atteindre la durée minimale
+            const elapsed = Date.now() - startTime;
+            const remainingTime = Math.max(0, minDuration - elapsed);
+            
+            if (remainingTime > 0) {
+                console.log(`⏰ Attente de ${remainingTime}ms pour UX...`);
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
 
             if (this.compareVersions(latestVersion, this.currentVersion) > 0) {
                 console.log('✨ Nouvelle version détectée!');
@@ -430,6 +438,14 @@ class SmartUpdater {
                 }
             }
         } catch (error) {
+            // Attendre le délai minimum même en cas d'erreur
+            const elapsed = Date.now() - startTime;
+            const remainingTime = Math.max(0, minDuration - elapsed);
+            
+            if (remainingTime > 0) {
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+
             console.error('💥 Erreur lors de la vérification:', error.message);
             console.error('📋 Stack trace:', error.stack);
             if (mainWindow) {
@@ -456,8 +472,17 @@ class SmartUpdater {
 
     // Notifier qu'une mise à jour est disponible
     async showUpdateDialog(version, release, asset, systemInfo) {
+        // Éviter les notifications en double pour la même version
+        if (this.lastNotifiedVersion === version) {
+            console.log('⚠️ Notification déjà envoyée pour la version', version);
+            return;
+        }
+        
+        this.lastNotifiedVersion = version;
+        
         // Envoyer les infos de mise à jour à l'interface
         if (mainWindow) {
+            console.log('📤 Envoi notification mise à jour:', version);
             mainWindow.webContents.send('update-available', {
                 version,
                 currentVersion: this.currentVersion,
@@ -693,32 +718,28 @@ ipcMain.handle('open-external', async (event, url) => {
     shell.openExternal(url);
 });
 
-// Gestionnaires de logs désactivés en production
-if (isDev) {
-    // Gestionnaire pour ouvrir le fichier de log (dev uniquement)
-    ipcMain.handle('open-log-file', async () => {
-        try {
-            await shell.openPath(logFilePath);
-            return true;
-        } catch (error) {
-            console.error('Erreur ouverture log:', error);
-            return false;
-        }
-    });
+// Gestionnaires pour l'accès aux logs (support utilisateur)
+ipcMain.handle('open-log-file', async () => {
+    try {
+        await shell.openPath(logFilePath);
+        return true;
+    } catch (error) {
+        console.error('Erreur ouverture log:', error);
+        return false;
+    }
+});
 
-    // Gestionnaire pour obtenir le contenu du log (dev uniquement)
-    ipcMain.handle('get-log-content', async () => {
-        try {
-            if (await fs.pathExists(logFilePath)) {
-                return await fs.readFile(logFilePath, 'utf8');
-            }
-            return 'Aucun log disponible';
-        } catch (error) {
-            console.error('Erreur lecture log:', error);
-            return 'Erreur lors de la lecture du log';
+ipcMain.handle('get-log-content', async () => {
+    try {
+        if (await fs.pathExists(logFilePath)) {
+            return await fs.readFile(logFilePath, 'utf8');
         }
-    });
-}
+        return 'Aucun log disponible';
+    } catch (error) {
+        console.error('Erreur lecture log:', error);
+        return 'Erreur lors de la lecture du log';
+    }
+});
 
 // Événements de l'application
 app.whenReady().then(createWindow);

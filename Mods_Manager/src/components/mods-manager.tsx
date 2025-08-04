@@ -16,6 +16,7 @@ import {
   Sun,
   Moon,
   Github,
+  FileText,
   X,
   CheckCircle,
   AlertCircle,
@@ -52,7 +53,7 @@ export function ModsManager() {
   const [isInstancesLoading, setIsInstancesLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
   const [updateInfo, setUpdateInfo] = useState<any>(null)
-  const [updateState, setUpdateState] = useState<'none' | 'available' | 'downloading' | 'ready' | 'error'>('none')
+  const [updateState, setUpdateState] = useState<'none' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'>('none')
   const [updateProgress, setUpdateProgress] = useState(0)
   const [updateError, setUpdateError] = useState<string>('')
   
@@ -74,23 +75,18 @@ export function ModsManager() {
 
     console.log('✅ electronAPI disponible');
     
-    toast({
-      variant: "info",
-      title: "Vérification des mises à jour",
-      description: "Recherche de nouvelles versions...",
-    })
-
+    // Afficher l'état de vérification
+    setUpdateState('checking')
+    setUpdateError('')
+    
     try {
       console.log('📞 Appel checkForUpdates...');
       await window.electronAPI.checkForUpdates()
       console.log('✅ checkForUpdates terminé');
     } catch (error) {
       console.log('❌ Erreur checkForUpdates:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de vérifier les mises à jour",
-      })
+      setUpdateState('error')
+      setUpdateError(error.toString())
     }
   }
 
@@ -335,42 +331,71 @@ export function ModsManager() {
     
     // Gestionnaires d'événements pour les mises à jour
     if (window.electronAPI) {
+      // Nettoyer les listeners existants pour éviter les doublons
+      window.electronAPI.removeAllListeners('update-available')
+      window.electronAPI.removeAllListeners('update-download-started')
+      window.electronAPI.removeAllListeners('update-downloaded')
+      window.electronAPI.removeAllListeners('update-not-available')
+      window.electronAPI.removeAllListeners('update-error')
+
       // Mise à jour disponible
-      window.electronAPI.onUpdateAvailable && window.electronAPI.onUpdateAvailable((info) => {
-        setUpdateInfo(info)
-        setUpdateState('available')
-      })
+      if (window.electronAPI.onUpdateAvailable) {
+        window.electronAPI.onUpdateAvailable((info) => {
+          console.log('🔄 Mise à jour disponible reçue:', info)
+          setUpdateInfo(info)
+          setUpdateState(prevState => {
+            if (prevState !== 'available') {
+              return 'available'
+            }
+            return prevState
+          })
+        })
+      }
 
       // Téléchargement de mise à jour commencé
-      window.electronAPI.onUpdateDownloadStarted((info) => {
-        setUpdateInfo(info)
-        setUpdateState('downloading')
-        setUpdateProgress(0)
-      })
+      if (window.electronAPI.onUpdateDownloadStarted) {
+        window.electronAPI.onUpdateDownloadStarted((info) => {
+          console.log('📥 Téléchargement commencé:', info)
+          setUpdateInfo(info)
+          setUpdateState('downloading')
+          setUpdateProgress(0)
+        })
+      }
 
       // Mise à jour téléchargée
-      window.electronAPI.onUpdateDownloaded((info) => {
-        setUpdateInfo(info)
-        setUpdateState('ready')
-        setUpdateProgress(100)
-      })
+      if (window.electronAPI.onUpdateDownloaded) {
+        window.electronAPI.onUpdateDownloaded((info) => {
+          console.log('✅ Téléchargement terminé:', info)
+          setUpdateInfo(info)
+          setUpdateState('ready')
+          setUpdateProgress(100)
+        })
+      }
 
       // Pas de mise à jour disponible
-      window.electronAPI.onUpdateNotAvailable(() => {
-        setUpdateState('none')
-        toast({
-          variant: "info",
-          title: "📱 Application à jour",
-          description: "Vous utilisez déjà la dernière version disponible.",
+      if (window.electronAPI.onUpdateNotAvailable) {
+        window.electronAPI.onUpdateNotAvailable(() => {
+          console.log('📱 Pas de mise à jour disponible')
+          // Attendre un peu pour laisser le temps de voir l'état "checking"
+          setTimeout(() => {
+            setUpdateState('none')
+            toast({
+              variant: "info",
+              title: "📱 Application à jour",
+              description: "Vous utilisez déjà la dernière version disponible.",
+            })
+          }, 1500)
         })
-      })
+      }
 
       // Erreur lors de la vérification
-      window.electronAPI.onUpdateError((error) => {
-        setUpdateError(error.toString())
-        setUpdateState('error')
-        console.log('Update error received:', error)
-      })
+      if (window.electronAPI.onUpdateError) {
+        window.electronAPI.onUpdateError((error) => {
+          console.log('❌ Erreur mise à jour:', error)
+          setUpdateError(error.toString())
+          setUpdateState('error')
+        })
+      }
     }
     
     return () => {
@@ -426,6 +451,7 @@ export function ModsManager() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
+                  {updateState === 'checking' && <RefreshCw className="h-6 w-6 text-blue-600 animate-spin" />}
                   {updateState === 'available' && <ArrowUp className="h-6 w-6 text-blue-600 animate-bounce" />}
                   {updateState === 'downloading' && <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />}
                   {updateState === 'ready' && <CheckCircle className="h-6 w-6 text-green-600" />}
@@ -433,6 +459,17 @@ export function ModsManager() {
                 </div>
                 
                 <div className="flex-1">
+                  {updateState === 'checking' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                        🔍 Vérification des mises à jour...
+                      </h3>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Recherche de nouvelles versions sur GitHub
+                      </p>
+                    </div>
+                  )}
+                  
                   {updateState === 'available' && (
                     <div>
                       <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
@@ -486,6 +523,26 @@ export function ModsManager() {
               </div>
               
               <div className="flex items-center space-x-2">
+                {updateState === 'checking' && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Vérification...
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setUpdateState('none')}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+                
                 {updateState === 'available' && (
                   <>
                     <Button
@@ -702,6 +759,24 @@ export function ModsManager() {
                   >
                     <Github className="h-4 w-4" />
                     <span>Voir sur GitHub</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      if (window.electronAPI?.openLogFile) {
+                        window.electronAPI.openLogFile()
+                        toast({
+                          variant: "info",
+                          title: "Logs ouverts",
+                          description: "Le fichier de logs a été ouvert dans votre éditeur par défaut.",
+                        })
+                      }
+                    }}
+                    className="flex items-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Voir les logs</span>
                   </Button>
                 </div>
               </div>
