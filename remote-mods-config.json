@@ -12,12 +12,7 @@
         "sodiumdynamiclights-forge-1.0.10-1.20.1.jar": "https://cdn.modrinth.com/data/PxQSWIcD/versions/I156ee3A/sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
         "curiouslanterns-1.20.1-1.3.6.jar": "https://cdn.modrinth.com/data/cE5SLYbv/versions/q3pQ4N0L/curiouslanterns-1.20.1-1.3.6.jar",
         "radiantgear-forge-2.2.0%2B1.20.1.jar": "https://cdn.modrinth.com/data/AtT9wm5O/versions/dQfDugX5/radiantgear-forge-2.2.0%2B1.20.1.jar",
-        "iris-neoforge-1.9.1+mc1.21.7.jar": "https://cdn.modrinth.com/data/YL57xq9U/versions/xA5cxBvz/iris-neoforge-1.9.1%2Bmc1.21.7.jar",
-        "lithium-neoforge-0.18.0+mc1.21.8.jar": "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qV99i9jE/lithium-neoforge-0.18.0%2Bmc1.21.8.jar",
-        "Xaeros_Minimap_25.2.12_Fabric_1.21.8.jar": "https://cdn.modrinth.com/data/1bokaNcj/versions/StqWcPqA/Xaeros_Minimap_25.2.12_Fabric_1.21.8.jar",
-        "entity_model_features_fabric_1.21.6-2.4.4.jar": "https://cdn.modrinth.com/data/4I1XuqiY/versions/N0YnseYc/entity_model_features_fabric_1.21.6-2.4.4.jar",
-        "skinlayers3d-neoforge-1.8.2-mc1.21.6.jar": "https://cdn.modrinth.com/data/zV5r3pPn/versions/PbrMoa0E/skinlayers3d-neoforge-1.8.2-mc1.21.6.jar",
-        "ForgeConfigAPIPort-v21.4.2-1.21.4-NeoForge.jar": "https://cdn.modrinth.com/data/ohNO6lps/versions/8fO3mzdN/ForgeConfigAPIPort-v21.4.2-1.21.4-NeoForge.jar"
+        "iris-neoforge-1.9.1+mc1.21.7.jar": "https://cdn.modrinth.com/data/YL57xq9U/versions/xA5cxBvz/iris-neoforge-1.9.1%2Bmc1.21.7.jar"
   },
   "configFiles": [
     {
