@@ -15,7 +15,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // Mises à jour
   checkUpdates: () => ipcRenderer.invoke('check-updates'),
-  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  checkForUpdates: () => ipcRenderer.invoke('check-updates'),
+  startUpdateDownload: () => ipcRenderer.invoke('start-update-download'),
   restartAndInstall: () => ipcRenderer.invoke('restart-and-install'),
   
   // Événements (pour la progression des téléchargements)
@@ -39,6 +40,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdateDownloadProgress: (callback) => {
     ipcRenderer.on('download-progress', (event, progress) => callback(progress));
   },
+  onUpdateDownloadStarted: (callback) => {
+    ipcRenderer.on('update-download-started', (event, info) => callback(info));
+  },
   
   // Nettoyage des écouteurs
   removeAllListeners: (channel) => {
@@ -46,5 +50,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // Ouvrir des liens externes
-  openExternal: (url) => ipcRenderer.invoke('open-external', url)
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  
+  // Gestion des logs
+  openLogFile: () => ipcRenderer.invoke('open-log-file'),
+  getLogContent: () => ipcRenderer.invoke('get-log-content')
 });

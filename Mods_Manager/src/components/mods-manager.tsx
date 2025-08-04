@@ -15,7 +15,12 @@ import {
   Loader2,
   Sun,
   Moon,
-  Github
+  Github,
+  FileText,
+  X,
+  CheckCircle,
+  AlertCircle,
+  ArrowUp
 } from 'lucide-react'
 
 interface MinecraftInstance {
@@ -48,12 +53,18 @@ export function ModsManager() {
   const [isInstancesLoading, setIsInstancesLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
   const [updateInfo, setUpdateInfo] = useState<any>(null)
+  const [updateState, setUpdateState] = useState<'none' | 'available' | 'downloading' | 'ready' | 'error'>('none')
+  const [updateProgress, setUpdateProgress] = useState(0)
+  const [updateError, setUpdateError] = useState<string>('')
   
   const { toast } = useToast()
   const { theme, setTheme } = useTheme()
 
   const handleCheckForUpdates = async () => {
+    console.log('🔘 BOUTON REFRESH CLIQUE');
+    
     if (!window.electronAPI) {
+      console.log('⚠️ Mode dev - electronAPI non disponible');
       toast({
         variant: "info",
         title: "Mode développement",
@@ -62,6 +73,8 @@ export function ModsManager() {
       return
     }
 
+    console.log('✅ electronAPI disponible');
+    
     toast({
       variant: "info",
       title: "Vérification des mises à jour",
@@ -69,8 +82,11 @@ export function ModsManager() {
     })
 
     try {
+      console.log('📞 Appel checkForUpdates...');
       await window.electronAPI.checkForUpdates()
+      console.log('✅ checkForUpdates terminé');
     } catch (error) {
+      console.log('❌ Erreur checkForUpdates:', error);
       toast({
         variant: "destructive",
         title: "Erreur",
@@ -321,65 +337,47 @@ export function ModsManager() {
     // Gestionnaires d'événements pour les mises à jour
     if (window.electronAPI) {
       // Mise à jour disponible
-      window.electronAPI.onUpdateAvailable((info) => {
+      window.electronAPI.onUpdateAvailable && window.electronAPI.onUpdateAvailable((info) => {
         setUpdateInfo(info)
-        toast({
-          variant: "info",
-          title: "Mise à jour disponible",
-          description: `Version ${info.version} trouvée. Téléchargement en cours...`,
-          action: (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleInstallUpdate}
-            >
-              Installer
-            </Button>
-          ),
-        })
+        setUpdateState('available')
+      })
+
+      // Téléchargement de mise à jour commencé
+      window.electronAPI.onUpdateDownloadStarted((info) => {
+        setUpdateInfo(info)
+        setUpdateState('downloading')
+        setUpdateProgress(0)
       })
 
       // Mise à jour téléchargée
       window.electronAPI.onUpdateDownloaded((info) => {
-        toast({
-          variant: "success",
-          title: "Mise à jour prête",
-          description: `Version ${info.version} téléchargée. Redémarrez pour installer.`,
-          action: (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleInstallUpdate}
-            >
-              Redémarrer
-            </Button>
-          ),
-        })
+        setUpdateInfo(info)
+        setUpdateState('ready')
+        setUpdateProgress(100)
       })
 
       // Pas de mise à jour disponible
       window.electronAPI.onUpdateNotAvailable(() => {
+        setUpdateState('none')
         toast({
           variant: "info",
-          title: "Application à jour",
-          description: "Vous avez déjà la dernière version installée.",
+          title: "📱 Application à jour",
+          description: "Vous utilisez déjà la dernière version disponible.",
         })
       })
 
       // Erreur lors de la vérification
       window.electronAPI.onUpdateError((error) => {
-        toast({
-          variant: "destructive",
-          title: "Erreur de mise à jour",
-          description: "Impossible de vérifier les mises à jour. Vérifiez votre connexion.",
-        })
+        setUpdateError(error.toString())
+        setUpdateState('error')
+        console.log('Update error received:', error)
       })
     }
     
     return () => {
       if (window.electronAPI) {
         window.electronAPI.removeAllListeners('download-progress')
-        window.electronAPI.removeAllListeners('update-available')
+        window.electronAPI.removeAllListeners('update-download-started')
         window.electronAPI.removeAllListeners('update-not-available')
         window.electronAPI.removeAllListeners('update-error')
         window.electronAPI.removeAllListeners('update-downloaded')
@@ -398,7 +396,7 @@ export function ModsManager() {
               <h1 className="text-2xl font-bold">
                 Mods Manager
               </h1>
-              <Badge variant="secondary">v2.1.0</Badge>
+              <Badge variant="secondary">v2.0.0</Badge>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -421,6 +419,128 @@ export function ModsManager() {
           </div>
         </div>
       </header>
+
+      {/* Interface de mise à jour stylée */}
+      {updateState !== 'none' && (
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-b border-blue-200 dark:border-blue-800">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  {updateState === 'available' && <ArrowUp className="h-6 w-6 text-blue-600 animate-bounce" />}
+                  {updateState === 'downloading' && <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />}
+                  {updateState === 'ready' && <CheckCircle className="h-6 w-6 text-green-600" />}
+                  {updateState === 'error' && <AlertCircle className="h-6 w-6 text-red-600" />}
+                </div>
+                
+                <div className="flex-1">
+                  {updateState === 'available' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                        🚀 Nouvelle version disponible !
+                      </h3>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Version {updateInfo?.version} • {updateInfo?.size ? `${(updateInfo.size / (1024 * 1024)).toFixed(1)} MB` : 'Taille inconnue'}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {updateState === 'downloading' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                        📥 Téléchargement en cours...
+                      </h3>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Version {updateInfo?.version} • {updateProgress}% terminé
+                      </p>
+                      <div className="mt-2 w-full bg-blue-200 rounded-full h-2 dark:bg-blue-800">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                          style={{ width: `${updateProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {updateState === 'ready' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                        ✅ Mise à jour prête !
+                      </h3>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        Version {updateInfo?.version} téléchargée • Prêt à installer
+                      </p>
+                    </div>
+                  )}
+                  
+                  {updateState === 'error' && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-red-900 dark:text-red-100">
+                        ⚠️ Erreur de mise à jour
+                      </h3>
+                      <p className="text-sm text-red-700 dark:text-red-300">
+                        {updateError || 'Une erreur est survenue'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                {updateState === 'available' && (
+                  <>
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={async () => {
+                        if (window.electronAPI?.startUpdateDownload) {
+                          // Déclencher le téléchargement
+                          await window.electronAPI.startUpdateDownload()
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Installer
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setUpdateState('none')}
+                    >
+                      Plus tard
+                    </Button>
+                  </>
+                )}
+                
+                {updateState === 'ready' && (
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      if (window.electronAPI?.restartAndInstall) {
+                        window.electronAPI.restartAndInstall()
+                      }
+                    }}
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Redémarrer
+                  </Button>
+                )}
+                
+                {(updateState === 'error' || updateState === 'downloading') && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setUpdateState('none')}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -550,7 +670,7 @@ export function ModsManager() {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Informations</h4>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p>Version: 2.1.0</p>
+                  <p>Version: 2.0.0</p>
                   <p>Développé par: Azurich</p>
                 </div>
               </div>
@@ -583,6 +703,19 @@ export function ModsManager() {
                   >
                     <Github className="h-4 w-4" />
                     <span>Voir sur GitHub</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      if (window.electronAPI?.openLogFile) {
+                        window.electronAPI.openLogFile()
+                      }
+                    }}
+                    className="flex items-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Voir les logs</span>
                   </Button>
                 </div>
               </div>

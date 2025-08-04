@@ -1,6 +1,6 @@
 {
   "name": "mods-manager",
-  "version": "2.1.1",
+  "version": "2.0.0",
   "description": "Gestionnaire de mods Minecraft moderne avec Shadcn UI",
   "author": "Azurich",
   "main": "electron/main.js",

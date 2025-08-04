@@ -5,12 +5,50 @@ const fs = require('fs-extra');
 const axios = require('axios');
 const Store = require('electron-store');
 
+// Système de logging dans un fichier
+const logFilePath = path.join(require('os').tmpdir(), 'mods-manager-debug.log');
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+function writeToLog(level, ...args) {
+    const timestamp = new Date().toISOString();
+    const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+    ).join(' ');
+    const logEntry = `[${timestamp}] [${level}] ${message}\n`;
+    
+    try {
+        fs.appendFileSync(logFilePath, logEntry);
+    } catch (error) {
+        // Ignorer les erreurs de logging
+    }
+    
+    // Appeler aussi la console originale
+    if (level === 'ERROR') {
+        originalConsoleError(...args);
+    } else {
+        originalConsoleLog(...args);
+    }
+}
+
+// Remplacer console.log et console.error
+console.log = (...args) => writeToLog('INFO', ...args);
+console.error = (...args) => writeToLog('ERROR', ...args);
+
+// Nettoyer le fichier de log au démarrage
+try {
+    fs.writeFileSync(logFilePath, `=== DEMARRAGE MODS MANAGER ${new Date().toISOString()} ===\n`);
+    console.log('📝 Fichier de log créé:', logFilePath);
+} catch (error) {
+    console.error('❌ Impossible de créer le fichier de log:', error);
+}
+
 // Configuration du store pour les paramètres
 const store = new Store();
 
 // Variables globales
 let mainWindow;
-const VERSION = '2.1.1';
+const VERSION = '2.0.0';
 
 // Fonction pour charger la configuration des mods
 function loadModsConfig() {
@@ -126,15 +164,25 @@ function createWindow() {
     } else {
         // En production, charger les fichiers buildés
         mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+        // En production normale, pas de DevTools
+        // mainWindow.webContents.openDevTools();
     }
 
     // Afficher la fenêtre quand elle est prête
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
+        
+        console.log('🚀 APPLICATION DEMARREE');
+        console.log('📱 Version:', VERSION);
+        console.log('🔧 Mode dev:', isDev);
+        console.log('🌐 Smart updater initialisé:', !!smartUpdater);
 
         // Vérifier les mises à jour au démarrage
         if (!isDev) {
+            console.log('🔄 Vérification auto des mises à jour...');
             checkForUpdates();
+        } else {
+            console.log('⏸️ Mode dev - pas de vérification auto');
         }
     });
 
@@ -142,6 +190,16 @@ function createWindow() {
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
         shell.openExternal(url);
         return { action: 'deny' };
+    });
+
+    // Raccourci clavier pour ouvrir/fermer DevTools
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+        if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+            mainWindow.webContents.toggleDevTools();
+        }
+        if (input.key === 'F12') {
+            mainWindow.webContents.toggleDevTools();
+        }
     });
 }
 
@@ -290,33 +348,374 @@ ipcMain.handle('download-new-mods', async(event, modsPath) => {
     return results;
 });
 
-async function checkForUpdates() {
-    try {
-        const versionUrl = 'https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/version.txt';
-        const response = await axios.get(versionUrl, { timeout: 5000 });
+// Système de mise à jour intelligent
+class SmartUpdater {
+    constructor() {
+        this.currentVersion = VERSION;
+        this.repoUrl = 'https://api.github.com/repos/azurich/Mods_Manager';
+        this.isUpdating = false;
+        this.pendingUpdate = null;
+    }
 
-        const latestVersion = response.data.trim();
+    // Détecter l'architecture et le type d'installation
+    getSystemInfo() {
+        const arch = process.arch === 'x64' ? 'x64' : 'ia32';
+        const isPortable = !process.env.APPDATA?.includes('Programs') && 
+                          !process.execPath.includes('Program Files');
+        
+        return {
+            arch,
+            type: isPortable ? 'portable' : 'setup',
+            platform: 'win'
+        };
+    }
 
-        if (latestVersion !== VERSION) {
-            const result = await dialog.showMessageBox(mainWindow, {
-                type: 'info',
-                title: 'Mise à jour disponible',
-                message: `Une nouvelle version (${latestVersion}) est disponible.`,
-                detail: `Version actuelle: ${VERSION}\nNouvelle version: ${latestVersion}`,
-                buttons: ['Télécharger', 'Plus tard'],
-                defaultId: 0
+    // Obtenir les informations de la dernière release
+    async getLatestRelease() {
+        try {
+            console.log('🔍 Vérification des mises à jour...');
+            console.log('📡 URL API:', `${this.repoUrl}/releases/latest`);
+            
+            const response = await axios.get(`${this.repoUrl}/releases/latest`, {
+                timeout: 10000,
+                headers: {
+                    'User-Agent': 'Mods-Manager-Updater'
+                }
             });
+            
+            console.log('✅ Réponse reçue:', {
+                tag_name: response.data.tag_name,
+                assets_count: response.data.assets?.length || 0,
+                published_at: response.data.published_at
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error('❌ Erreur lors de la récupération de la release:', error.message);
+            console.error('📊 Détails erreur:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data
+            });
+            throw new Error('Impossible de vérifier les mises à jour');
+        }
+    }
 
+    // Trouver l'asset approprié pour le système
+    findMatchingAsset(release, systemInfo) {
+        const assets = release.assets;
+        console.log('🎯 Recherche d\'asset pour:', systemInfo);
+        console.log('📦 Assets disponibles:', assets.map(a => ({name: a.name, size: a.size})));
+        
+        // Priorités de recherche basées sur le système
+        const patterns = [
+            `Mods-Manager-${systemInfo.type === 'portable' ? 'Portable' : 'Setup'}-${systemInfo.arch}.exe`,
+            `Mods-Manager-${systemInfo.arch}.exe`,
+            `Mods-Manager.exe`
+        ];
+
+        console.log('🔍 Patterns de recherche:', patterns);
+
+        for (const pattern of patterns) {
+            console.log(`🔎 Recherche pattern: ${pattern}`);
+            const asset = assets.find(a => a.name.includes(pattern) || 
+                                         a.name.toLowerCase().includes(pattern.toLowerCase()));
+            if (asset) {
+                console.log('✅ Asset trouvé:', asset.name);
+                return asset;
+            }
+        }
+
+        // Fallback: premier fichier .exe trouvé
+        const fallbackAsset = assets.find(a => a.name.endsWith('.exe'));
+        console.log('🔄 Fallback asset:', fallbackAsset?.name || 'Aucun');
+        return fallbackAsset;
+    }
+
+    // Vérifier les mises à jour
+    async checkForUpdates() {
+        if (this.isUpdating) {
+            console.log('⏳ Mise à jour déjà en cours...');
+            return;
+        }
+
+        try {
+            console.log('🚀 Démarrage vérification mise à jour');
+            console.log('📱 Version actuelle:', this.currentVersion);
+            
+            const release = await this.getLatestRelease();
+            const latestVersion = release.tag_name.replace('v', '');
+            
+            console.log('🔄 Version disponible:', latestVersion);
+            console.log('⚖️ Comparaison versions:', this.compareVersions(latestVersion, this.currentVersion));
+
+            if (this.compareVersions(latestVersion, this.currentVersion) > 0) {
+                console.log('✨ Nouvelle version détectée!');
+                
+                const systemInfo = this.getSystemInfo();
+                console.log('💻 Info système:', systemInfo);
+                
+                const asset = this.findMatchingAsset(release, systemInfo);
+
+                if (!asset) {
+                    console.error('❌ Aucun asset compatible trouvé');
+                    throw new Error('Aucun fichier de mise à jour compatible trouvé');
+                }
+
+                console.log('🎯 Asset sélectionné:', asset.name);
+                await this.showUpdateDialog(latestVersion, release, asset, systemInfo);
+            } else {
+                console.log('✅ Application déjà à jour');
+                if (mainWindow) {
+                    mainWindow.webContents.send('update-not-available');
+                }
+            }
+        } catch (error) {
+            console.error('💥 Erreur lors de la vérification:', error.message);
+            console.error('📋 Stack trace:', error.stack);
+            if (mainWindow) {
+                mainWindow.webContents.send('update-error', error.message);
+            }
+        }
+    }
+
+    // Comparer les versions (format semver)
+    compareVersions(v1, v2) {
+        const parts1 = v1.split('.').map(Number);
+        const parts2 = v2.split('.').map(Number);
+        
+        for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            const part1 = parts1[i] || 0;
+            const part2 = parts2[i] || 0;
+            
+            if (part1 > part2) return 1;
+            if (part1 < part2) return -1;
+        }
+        
+        return 0;
+    }
+
+    // Notifier qu'une mise à jour est disponible
+    async showUpdateDialog(version, release, asset, systemInfo) {
+        // Envoyer les infos de mise à jour à l'interface
+        if (mainWindow) {
+            mainWindow.webContents.send('update-available', {
+                version,
+                currentVersion: this.currentVersion,
+                size: asset.size,
+                type: systemInfo.type,
+                arch: systemInfo.arch,
+                asset: asset.name
+            });
+        }
+        
+        // Stocker les infos pour le téléchargement
+        this.pendingUpdate = { asset, version, systemInfo };
+    }
+
+    // Déclencher le téléchargement de la mise à jour en attente
+    async startPendingUpdate() {
+        if (!this.pendingUpdate) {
+            throw new Error('Aucune mise à jour en attente');
+        }
+        
+        const { asset, version, systemInfo } = this.pendingUpdate;
+        await this.downloadAndInstall(asset, version, systemInfo);
+    }
+
+    // Télécharger et installer la mise à jour
+    async downloadAndInstall(asset, version, systemInfo) {
+        this.isUpdating = true;
+        console.log('📥 Début téléchargement...', {asset: asset.name, version, systemInfo});
+        
+        try {
+            // Notification de début
+            if (mainWindow) {
+                mainWindow.webContents.send('update-download-started', { 
+                    version, 
+                    size: asset.size,
+                    type: systemInfo.type
+                });
+            }
+
+            // Créer le dossier temporaire
+            const tempDir = path.join(require('os').tmpdir(), 'mods-manager-update');
+            console.log('📁 Dossier temporaire:', tempDir);
+            await fs.ensureDir(tempDir);
+
+            // Télécharger le fichier
+            const updateFilePath = path.join(tempDir, asset.name);
+            console.log('⬇️ Téléchargement vers:', updateFilePath);
+            console.log('🌐 URL de téléchargement:', asset.browser_download_url);
+            
+            await this.downloadFile(asset.browser_download_url, updateFilePath);
+            console.log('✅ Téléchargement terminé');
+
+            // Créer l'installateur intelligent
+            console.log('🔧 Création installateur...');
+            await this.createSmartInstaller(tempDir, asset.name, systemInfo);
+
+            // Notification de fin de téléchargement
+            if (mainWindow) {
+                mainWindow.webContents.send('update-downloaded', { version });
+            }
+
+            // Lancer l'installation automatiquement
+            console.log('🚀 Lancement installation automatique...');
+            await this.performInstallation(tempDir, version);
+
+        } catch (error) {
+            console.error('💥 Erreur téléchargement:', error.message);
+            console.error('📋 Stack trace:', error.stack);
+            await this.showErrorDialog(error.message);
+        } finally {
+            this.isUpdating = false;
+            console.log('🏁 Fin processus mise à jour');
+        }
+    }
+
+    // Télécharger un fichier avec progression
+    async downloadFile(url, filePath) {
+        const response = await axios.get(url, {
+            responseType: 'stream',
+            timeout: 120000
+        });
+
+        const writer = fs.createWriteStream(filePath);
+        response.data.pipe(writer);
+
+        return new Promise((resolve, reject) => {
+            writer.on('finish', resolve);
+            writer.on('error', reject);
+        });
+    }
+
+    // Créer un installateur intelligent
+    async createSmartInstaller(tempDir, fileName, systemInfo) {
+        const isPortable = systemInfo.type === 'portable';
+        const currentExePath = process.execPath;
+        const currentDir = path.dirname(currentExePath);
+        
+        const installerScript = isPortable ? 
+            this.createPortableInstaller(fileName, currentExePath) :
+            this.createSetupInstaller(fileName);
+
+        await fs.writeFile(path.join(tempDir, 'updater.js'), installerScript);
+    }
+
+    // Script pour version portable
+    createPortableInstaller(fileName, currentExePath) {
+        return `
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+
+setTimeout(async () => {
+    try {
+        const updateFile = path.join(__dirname, '${fileName}');
+        const targetFile = '${currentExePath}';
+        
+        // Attendre que l'app se ferme
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Remplacer le fichier
+        if (fs.existsSync(updateFile)) {
+            if (fs.existsSync(targetFile)) {
+                fs.unlinkSync(targetFile);
+            }
+            fs.copyFileSync(updateFile, targetFile);
+            
+            // Relancer l'application
+            spawn(targetFile, [], { detached: true, stdio: 'ignore' });
+        }
+    } catch (error) {
+        console.error('Erreur installation:', error);
+    }
+}, 1000);
+`;
+    }
+
+    // Script pour version setup
+    createSetupInstaller(fileName) {
+        return `
+const { spawn } = require('child_process');
+const path = require('path');
+
+setTimeout(() => {
+    try {
+        const setupFile = path.join(__dirname, '${fileName}');
+        
+        // Lancer l'installateur
+        spawn(setupFile, ['/S'], { detached: true, stdio: 'ignore' });
+    } catch (error) {
+        console.error('Erreur installation:', error);
+    }
+}, 1000);
+`;
+    }
+
+    // Effectuer l'installation
+    async performInstallation(tempDir, version) {
+        // Lancer l'installateur
+        require('child_process').spawn('node', [path.join(tempDir, 'updater.js')], {
+            detached: true,
+            stdio: 'ignore'
+        });
+        
+        console.log('🎯 Installateur lancé, fermeture de l\'application...');
+        
+        // Fermer l'application
+        app.quit();
+    }
+
+    // Afficher dialogue d'erreur
+    async showErrorDialog(message) {
+        await dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            title: '❌ Erreur de mise à jour',
+            message: 'La mise à jour a échoué.',
+            detail: `${message}\n\nVous pouvez télécharger manuellement depuis GitHub.`,
+            buttons: ['🌐 Ouvrir GitHub', '✖️ Fermer'],
+            defaultId: 1
+        }).then((result) => {
             if (result.response === 0) {
                 shell.openExternal('https://github.com/azurich/Mods_Manager/releases/latest');
             }
-        }
-    } catch (error) {
-        console.error('Erreur lors de la vérification des mises à jour:', error);
+        });
     }
 }
 
+// Instance globale du système de mise à jour
+const smartUpdater = new SmartUpdater();
+
+// Fonction de vérification simplifiée
+async function checkForUpdates() {
+    console.log('🌟 DEBUT - checkForUpdates() appelée');
+    console.log('🔧 smartUpdater existe:', !!smartUpdater);
+    console.log('📋 Version actuelle dans main:', VERSION);
+    
+    try {
+        await smartUpdater.checkForUpdates();
+        console.log('✅ FIN - checkForUpdates() terminée avec succès');
+    } catch (error) {
+        console.log('❌ ERREUR dans checkForUpdates():', error.message);
+        console.log('📋 Stack:', error.stack);
+    }
+}
+
+
 ipcMain.handle('check-updates', checkForUpdates);
+
+// Handler pour déclencher le téléchargement
+ipcMain.handle('start-update-download', async () => {
+    try {
+        await smartUpdater.startPendingUpdate();
+        return true;
+    } catch (error) {
+        console.error('Erreur déclenchement mise à jour:', error);
+        return false;
+    }
+});
 
 // Gestionnaires pour l'auto-updater
 ipcMain.handle('check-for-updates', () => {
@@ -334,6 +733,30 @@ ipcMain.handle('restart-and-install', () => {
 // Gestionnaire pour ouvrir des liens externes
 ipcMain.handle('open-external', async (event, url) => {
     shell.openExternal(url);
+});
+
+// Gestionnaire pour ouvrir le fichier de log
+ipcMain.handle('open-log-file', async () => {
+    try {
+        await shell.openPath(logFilePath);
+        return true;
+    } catch (error) {
+        console.error('Erreur ouverture log:', error);
+        return false;
+    }
+});
+
+// Gestionnaire pour obtenir le contenu du log
+ipcMain.handle('get-log-content', async () => {
+    try {
+        if (await fs.pathExists(logFilePath)) {
+            return await fs.readFile(logFilePath, 'utf8');
+        }
+        return 'Aucun log disponible';
+    } catch (error) {
+        console.error('Erreur lecture log:', error);
+        return 'Erreur lors de la lecture du log';
+    }
 });
 
 // Événements de l'application
