@@ -16,7 +16,6 @@ import {
   Sun,
   Moon,
   Github,
-  FileText,
   X,
   CheckCircle,
   AlertCircle,
@@ -396,7 +395,7 @@ export function ModsManager() {
               <h1 className="text-2xl font-bold">
                 Mods Manager
               </h1>
-              <Badge variant="secondary">v2.0.0</Badge>
+              <Badge variant="secondary">v2.0.1</Badge>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -670,7 +669,7 @@ export function ModsManager() {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Informations</h4>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p>Version: 2.0.0</p>
+                  <p>Version: 2.0.1</p>
                   <p>Développé par: Azurich</p>
                 </div>
               </div>
@@ -703,19 +702,6 @@ export function ModsManager() {
                   >
                     <Github className="h-4 w-4" />
                     <span>Voir sur GitHub</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      if (window.electronAPI?.openLogFile) {
-                        window.electronAPI.openLogFile()
-                      }
-                    }}
-                    className="flex items-center space-x-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Voir les logs</span>
                   </Button>
                 </div>
               </div>

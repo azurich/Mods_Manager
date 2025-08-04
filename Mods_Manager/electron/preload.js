@@ -50,9 +50,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // Ouvrir des liens externes
-  openExternal: (url) => ipcRenderer.invoke('open-external', url),
-  
-  // Gestion des logs
-  openLogFile: () => ipcRenderer.invoke('open-log-file'),
-  getLogContent: () => ipcRenderer.invoke('get-log-content')
+  openExternal: (url) => ipcRenderer.invoke('open-external', url)
 });

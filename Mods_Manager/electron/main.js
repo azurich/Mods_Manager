@@ -1,46 +1,52 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
-const { autoUpdater } = require('electron-updater');
+// const { autoUpdater } = require('electron-updater'); // Désactivé - on utilise notre système intelligent
 const path = require('path');
 const fs = require('fs-extra');
 const axios = require('axios');
 const Store = require('electron-store');
 
-// Système de logging dans un fichier
-const logFilePath = path.join(require('os').tmpdir(), 'mods-manager-debug.log');
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
+// Système de logging (désactivé en production)
+const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('--dev');
+let logFilePath = null;
 
-function writeToLog(level, ...args) {
-    const timestamp = new Date().toISOString();
-    const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-    ).join(' ');
-    const logEntry = `[${timestamp}] [${level}] ${message}\n`;
-    
+if (isDev) {
+    // Système de logging actif en développement seulement
+    logFilePath = path.join(require('os').tmpdir(), 'mods-manager-debug.log');
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+
+    function writeToLog(level, ...args) {
+        const timestamp = new Date().toISOString();
+        const message = args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        const logEntry = `[${timestamp}] [${level}] ${message}\n`;
+        
+        try {
+            fs.appendFileSync(logFilePath, logEntry);
+        } catch (error) {
+            // Ignorer les erreurs de logging
+        }
+        
+        // Appeler aussi la console originale
+        if (level === 'ERROR') {
+            originalConsoleError(...args);
+        } else {
+            originalConsoleLog(...args);
+        }
+    }
+
+    // Remplacer console.log et console.error en dev
+    console.log = (...args) => writeToLog('INFO', ...args);
+    console.error = (...args) => writeToLog('ERROR', ...args);
+
+    // Nettoyer le fichier de log au démarrage
     try {
-        fs.appendFileSync(logFilePath, logEntry);
+        fs.writeFileSync(logFilePath, `=== DEMARRAGE MODS MANAGER ${new Date().toISOString()} ===\n`);
+        console.log('📝 Fichier de log créé:', logFilePath);
     } catch (error) {
-        // Ignorer les erreurs de logging
+        console.error('❌ Impossible de créer le fichier de log:', error);
     }
-    
-    // Appeler aussi la console originale
-    if (level === 'ERROR') {
-        originalConsoleError(...args);
-    } else {
-        originalConsoleLog(...args);
-    }
-}
-
-// Remplacer console.log et console.error
-console.log = (...args) => writeToLog('INFO', ...args);
-console.error = (...args) => writeToLog('ERROR', ...args);
-
-// Nettoyer le fichier de log au démarrage
-try {
-    fs.writeFileSync(logFilePath, `=== DEMARRAGE MODS MANAGER ${new Date().toISOString()} ===\n`);
-    console.log('📝 Fichier de log créé:', logFilePath);
-} catch (error) {
-    console.error('❌ Impossible de créer le fichier de log:', error);
 }
 
 // Configuration du store pour les paramètres
@@ -48,7 +54,7 @@ const store = new Store();
 
 // Variables globales
 let mainWindow;
-const VERSION = '2.0.0';
+const VERSION = '2.0.1';
 
 // Fonction pour charger la configuration des mods
 function loadModsConfig() {
@@ -85,57 +91,7 @@ function loadModsConfig() {
     }
 }
 
-// Configuration de l'auto-updater (désactivé en dev)
-const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('--dev');
-
-// Configuration de l'auto-updater
-if (!isDev) {
-    autoUpdater.checkForUpdatesAndNotify();
-    
-    // Événements de l'auto-updater
-    autoUpdater.on('checking-for-update', () => {
-        console.log('Vérification des mises à jour...');
-    });
-    
-    autoUpdater.on('update-available', (info) => {
-        console.log('Mise à jour disponible:', info.version);
-        if (mainWindow) {
-            mainWindow.webContents.send('update-available', info);
-        }
-    });
-    
-    autoUpdater.on('update-not-available', (info) => {
-        console.log('Aucune mise à jour disponible.');
-        if (mainWindow) {
-            mainWindow.webContents.send('update-not-available', info);
-        }
-    });
-    
-    autoUpdater.on('error', (err) => {
-        console.error('Erreur lors de la mise à jour:', err);
-        if (mainWindow) {
-            mainWindow.webContents.send('update-error', err);
-        }
-    });
-    
-    autoUpdater.on('download-progress', (progressObj) => {
-        let log_message = "Vitesse de téléchargement: " + progressObj.bytesPerSecond;
-        log_message = log_message + ' - Téléchargé ' + progressObj.percent + '%';
-        log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-        console.log(log_message);
-        
-        if (mainWindow) {
-            mainWindow.webContents.send('download-progress', progressObj);
-        }
-    });
-    
-    autoUpdater.on('update-downloaded', (info) => {
-        console.log('Mise à jour téléchargée');
-        if (mainWindow) {
-            mainWindow.webContents.send('update-downloaded', info);
-        }
-    });
-}
+// Note: electron-updater désactivé - on utilise notre système de mise à jour intelligent
 
 function createWindow() {
     // Créer la fenêtre principale
@@ -164,8 +120,7 @@ function createWindow() {
     } else {
         // En production, charger les fichiers buildés
         mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-        // En production normale, pas de DevTools
-        // mainWindow.webContents.openDevTools();
+        // DevTools désactivés en production
     }
 
     // Afficher la fenêtre quand elle est prête
@@ -177,10 +132,12 @@ function createWindow() {
         console.log('🔧 Mode dev:', isDev);
         console.log('🌐 Smart updater initialisé:', !!smartUpdater);
 
-        // Vérifier les mises à jour au démarrage
+        // Vérifier les mises à jour au démarrage avec notre système intelligent
         if (!isDev) {
-            console.log('🔄 Vérification auto des mises à jour...');
-            checkForUpdates();
+            console.log('🔄 Vérification auto des mises à jour (système intelligent)...');
+            setTimeout(() => {
+                checkForUpdates();
+            }, 2000); // Attendre 2s que l'interface soit chargée
         } else {
             console.log('⏸️ Mode dev - pas de vérification auto');
         }
@@ -192,15 +149,17 @@ function createWindow() {
         return { action: 'deny' };
     });
 
-    // Raccourci clavier pour ouvrir/fermer DevTools
-    mainWindow.webContents.on('before-input-event', (event, input) => {
-        if (input.control && input.shift && input.key.toLowerCase() === 'i') {
-            mainWindow.webContents.toggleDevTools();
-        }
-        if (input.key === 'F12') {
-            mainWindow.webContents.toggleDevTools();
-        }
-    });
+    // Raccourcis DevTools désactivés en production
+    if (isDev) {
+        mainWindow.webContents.on('before-input-event', (event, input) => {
+            if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+                mainWindow.webContents.toggleDevTools();
+            }
+            if (input.key === 'F12') {
+                mainWindow.webContents.toggleDevTools();
+            }
+        });
+    }
 }
 
 // Gestionnaires IPC (identiques à l'ancienne version)
@@ -717,17 +676,16 @@ ipcMain.handle('start-update-download', async () => {
     }
 });
 
-// Gestionnaires pour l'auto-updater
+// Anciens gestionnaires electron-updater (désactivés)
 ipcMain.handle('check-for-updates', () => {
-    if (!isDev) {
-        autoUpdater.checkForUpdatesAndNotify();
-    }
+    // Rediriger vers notre système intelligent
+    return checkForUpdates();
 });
 
 ipcMain.handle('restart-and-install', () => {
-    if (!isDev) {
-        autoUpdater.quitAndInstall();
-    }
+    // Pour la compatibilité, redémarrer l'app normalement
+    app.relaunch();
+    app.exit();
 });
 
 // Gestionnaire pour ouvrir des liens externes
@@ -735,29 +693,32 @@ ipcMain.handle('open-external', async (event, url) => {
     shell.openExternal(url);
 });
 
-// Gestionnaire pour ouvrir le fichier de log
-ipcMain.handle('open-log-file', async () => {
-    try {
-        await shell.openPath(logFilePath);
-        return true;
-    } catch (error) {
-        console.error('Erreur ouverture log:', error);
-        return false;
-    }
-});
-
-// Gestionnaire pour obtenir le contenu du log
-ipcMain.handle('get-log-content', async () => {
-    try {
-        if (await fs.pathExists(logFilePath)) {
-            return await fs.readFile(logFilePath, 'utf8');
+// Gestionnaires de logs désactivés en production
+if (isDev) {
+    // Gestionnaire pour ouvrir le fichier de log (dev uniquement)
+    ipcMain.handle('open-log-file', async () => {
+        try {
+            await shell.openPath(logFilePath);
+            return true;
+        } catch (error) {
+            console.error('Erreur ouverture log:', error);
+            return false;
         }
-        return 'Aucun log disponible';
-    } catch (error) {
-        console.error('Erreur lecture log:', error);
-        return 'Erreur lors de la lecture du log';
-    }
-});
+    });
+
+    // Gestionnaire pour obtenir le contenu du log (dev uniquement)
+    ipcMain.handle('get-log-content', async () => {
+        try {
+            if (await fs.pathExists(logFilePath)) {
+                return await fs.readFile(logFilePath, 'utf8');
+            }
+            return 'Aucun log disponible';
+        } catch (error) {
+            console.error('Erreur lecture log:', error);
+            return 'Erreur lors de la lecture du log';
+        }
+    });
+}
 
 // Événements de l'application
 app.whenReady().then(createWindow);

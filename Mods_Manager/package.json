@@ -1,6 +1,6 @@
 {
   "name": "mods-manager",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Gestionnaire de mods Minecraft moderne avec Shadcn UI",
   "author": "Azurich",
   "main": "electron/main.js",
@@ -107,7 +107,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "electron-store": "^8.1.0",
-    "electron-updater": "^6.6.2",
     "fs-extra": "^11.2.0",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
