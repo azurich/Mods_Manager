@@ -10,7 +10,7 @@ const store = new Store();
 
 // Variables globales
 let mainWindow;
-const VERSION = '2.1.0';
+const VERSION = '2.1.1';
 
 // Fonction pour charger la configuration des mods
 function loadModsConfig() {
