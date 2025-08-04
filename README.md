@@ -204,8 +204,6 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 <div align="center">
 
-**[⬆ Retour en haut](#-mods-manager)**
-
 Made with ❤️ for the Minecraft community
 
 </div>
