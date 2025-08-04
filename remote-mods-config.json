@@ -1,26 +1,46 @@
 {
-    "oldMods": [
-        "BoatBreakFix-Universal-1.0.2.jar",
-        "curios-forge-5.4.6+1.20.1.jar",
-        "TravelersBackpack-1.20.1-9.1.7.jar"
-    ],
-    "newMods": {
-        "curios-forge-5.11.0+1.20.1.jar": "https://cdn.modrinth.com/data/vvuO3ImH/versions/QBtodtmR/curios-forge-5.11.0%2B1.20.1.jar",
-        "corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar": "https://cdn.modrinth.com/data/pJGcKPh1/versions/kNCc37SZ/corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar",
-        "sophisticatedcore-1.20.1-0.6.26.668.jar": "https://mediafilez.forgecdn.net/files/5729/525/sophisticatedcore-1.20.1-0.6.26.668.jar",
-        "sophisticatedbackpacks-1.20.1-3.20.7.1075.jar": "https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar",
-        "sodiumdynamiclights-forge-1.0.10-1.20.1.jar": "https://cdn.modrinth.com/data/PxQSWIcD/versions/I156ee3A/sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
-        "curiouslanterns-1.20.1-1.3.6.jar": "https://cdn.modrinth.com/data/cE5SLYbv/versions/q3pQ4N0L/curiouslanterns-1.20.1-1.3.6.jar",
-        "radiantgear-forge-2.2.0%2B1.20.1.jar": "https://cdn.modrinth.com/data/AtT9wm5O/versions/dQfDugX5/radiantgear-forge-2.2.0%2B1.20.1.jar",
-        "iris-neoforge-1.9.1+mc1.21.7.jar": "https://cdn.modrinth.com/data/YL57xq9U/versions/xA5cxBvz/iris-neoforge-1.9.1%2Bmc1.21.7.jar",
-        "lithium-neoforge-0.18.0+mc1.21.8.jar": "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qV99i9jE/lithium-neoforge-0.18.0%2Bmc1.21.8.jar",
-        "Xaeros_Minimap_25.2.12_Fabric_1.21.8.jar": "https://cdn.modrinth.com/data/1bokaNcj/versions/StqWcPqA/Xaeros_Minimap_25.2.12_Fabric_1.21.8.jar",
-        "entity_model_features_fabric_1.21.6-2.4.4.jar": "https://cdn.modrinth.com/data/4I1XuqiY/versions/N0YnseYc/entity_model_features_fabric_1.21.6-2.4.4.jar",
-        "skinlayers3d-neoforge-1.8.2-mc1.21.6.jar": "https://cdn.modrinth.com/data/zV5r3pPn/versions/PbrMoa0E/skinlayers3d-neoforge-1.8.2-mc1.21.6.jar"
+  "version": "1.0.0",
+  "lastUpdate": "2024-01-04T12:00:00Z",
+  "description": "Configuration des mods Minecraft pour Mods Manager",
+  "oldMods": [
+    "BoatBreakFix-Universal-1.0.2.jar",
+    "curios-forge-5.4.6+1.20.1.jar",
+    "TravelersBackpack-1.20.1-9.1.7.jar"
+  ],
+  "newMods": {
+    "curios-forge-5.11.0+1.20.1.jar": "https://cdn.modrinth.com/data/vvuO3ImH/versions/QBtodtmR/curios-forge-5.11.0%2B1.20.1.jar",
+    "corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar": "https://cdn.modrinth.com/data/pJGcKPh1/versions/kNCc37SZ/corpsecurioscompat-1.18.x-1.20.x-Forge-2.2.1.jar",
+    "sophisticatedcore-1.20.1-0.6.26.668.jar": "https://mediafilez.forgecdn.net/files/5729/525/sophisticatedcore-1.20.1-0.6.26.668.jar",
+    "sophisticatedbackpacks-1.20.1-3.20.7.1075.jar": "https://mediafilez.forgecdn.net/files/5732/297/sophisticatedbackpacks-1.20.1-3.20.7.1075.jar",
+    "sodiumdynamiclights-forge-1.0.10-1.20.1.jar": "https://cdn.modrinth.com/data/PxQSWIcD/versions/I156ee3A/sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
+    "curiouslanterns-1.20.1-1.3.6.jar": "https://cdn.modrinth.com/data/cE5SLYbv/versions/q3pQ4N0L/curiouslanterns-1.20.1-1.3.6.jar",
+    "radiantgear-forge-2.2.0%2B1.20.1.jar": "https://cdn.modrinth.com/data/AtT9wm5O/versions/dQfDugX5/radiantgear-forge-2.2.0%2B1.20.1.jar"
+  },
+  "configFiles": [
+    {
+      "filename": "sodiumdynamiclights-client.toml",
+      "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/sodiumdynamiclights-client.toml",
+      "destination": "config"
     },
-    "configFiles": [{
-        "filename": "sodiumdynamiclights-client.toml",
-        "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/sodiumdynamiclights-client.toml",
-        "destination": "config"
-    }]
+    {
+      "filename": "curios-client.toml",
+      "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/curios-client.toml",
+      "destination": "config"
+    },
+    {
+      "filename": "sophisticatedbackpacks-client.toml",
+      "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/sophisticatedbackpacks-client.toml",
+      "destination": "config"
+    },
+    {
+      "filename": "radiantgear.json",
+      "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/radiantgear.json",
+      "destination": "config"
+    },
+    {
+      "filename": "jei-client.ini",
+      "url": "https://raw.githubusercontent.com/azurich/Mods_Manager/main/Mods_Manager/config/jei-client.ini",
+      "destination": "config"
+    }
+  ]
 }
