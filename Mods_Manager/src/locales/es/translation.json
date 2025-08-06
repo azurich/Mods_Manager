@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "Mods Manager",
+    "version": "v{{version}}"
+  },
+  "header": {
+    "checkUpdates": "Buscar actualizaciones",
+    "settings": "Configuración"
+  },
+  "language": {
+    "label": "Idioma",
+    "french": "Français",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "instances": {
+    "title": "Selección de Instancia",
+    "selectInstance": "Instancia de Minecraft",
+    "loading": "Cargando instancias...",
+    "chooseFirst": "Elige primero un launcher abajo",
+    "selectPlaceholder": "Selecciona una instancia...",
+    "none": "Ningún launcher detectado"
+  },
+  "launchers": {
+    "detection": "Detección de Launchers",
+    "searching": "Buscando launchers de Minecraft..."
+  },
+  "actions": {
+    "cleanup": {
+      "title": "Limpieza",
+      "description": "Elimina mods antiguos obsoletos de tu instancia",
+      "button": "Eliminar mods antiguos",
+      "inProgress": "Limpieza en curso",
+      "removing": "Eliminando mods antiguos..."
+    },
+    "install": {
+      "title": "Instalación",
+      "description": "Descarga e instala los últimos mods disponibles",
+      "button": "Instalar nuevos mods",
+      "inProgress": "Instalación en curso",
+      "downloading": "Descargando nuevos mods..."
+    }
+  },
+  "updates": {
+    "checking": "Verificando actualizaciones...",
+    "searchingGithub": "Buscando nuevas versiones en GitHub",
+    "available": "¡Nueva versión disponible!",
+    "downloadProgress": "Descarga en curso...",
+    "ready": "¡Actualización lista!",
+    "error": "Error de actualización",
+    "noUpdate": "Aplicación actualizada",
+    "noUpdateDesc": "Ya estás usando la última versión disponible.",
+    "install": "Instalar",
+    "restart": "Reiniciar",
+    "later": "Más tarde",
+    "completed": "completado"
+  },
+  "settings": {
+    "title": "Configuración",
+    "information": {
+      "title": "Información",
+      "version": "Versión: {{version}}",
+      "developer": "Desarrollado por: Azurich"
+    },
+    "configuration": {
+      "title": "Configuración de Mods",
+      "source": "Fuente: {{source}}",
+      "lastUpdate": "Última actualización: {{date}}",
+      "never": "Nunca",
+      "modsInfo": "{{oldMods}} mods a eliminar • {{newMods}} mods a instalar • {{configFiles}} archivos de configuración",
+      "refresh": "Actualizar configuración de mods",
+      "refreshing": "Actualización en curso",
+      "refreshDesc": "Descargando configuración de mods..."
+    },
+    "actions": {
+      "title": "Acciones",
+      "refreshInstances": "Actualizar instancias",
+      "github": "Ver en GitHub",
+      "viewLogs": "Ver registros"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Auto",
+      "systemTooltip": "Sigue automáticamente el tema de Windows"
+    }
+  },
+  "toasts": {
+    "devMode": "Modo de desarrollo",
+    "devModeDesc": "Las actualizaciones solo están disponibles en modo de producción",
+    "instanceMissing": "Instancia faltante",
+    "instanceMissingDesc": "Por favor, selecciona primero una instancia",
+    "instanceSelected": "Instancia seleccionada",
+    "instanceRestored": "Instancia restaurada",
+    "instanceRestoredDesc": "Última instancia: {{name}}",
+    "loadingError": "Error de carga",
+    "loadingErrorDesc": "No se pudieron cargar las instancias: {{error}}",
+    "saveError": "Error de guardado",
+    "saveErrorDesc": "No se pudo guardar la instancia: {{error}}",
+    "deletionComplete": "Eliminación completada",
+    "deletionError": "Error de eliminación",
+    "deletionErrorDesc": "No se pudieron eliminar los mods: {{error}}",
+    "installComplete": "Instalación completada",
+    "installError": "Error de instalación",
+    "installErrorDesc": "No se pudieron instalar los mods: {{error}}",
+    "noLaunchers": "Ningún launcher encontrado",
+    "noLaunchersDesc": "CurseForge y Modrinth no detectados.",
+    "launchersDetected": "Launchers detectados",
+    "launchersDetectedDesc": "{{count}} launcher(s) encontrado(s). Selecciona uno.",
+    "instancesLoaded": "Instancias cargadas",
+    "instancesLoadedDesc": "{{count}} instancia(s) de {{launcher}} encontrada(s)",
+    "configRefreshed": "Configuración actualizada",
+    "configRefreshError": "Error de actualización",
+    "logsOpened": "Registros abiertos",
+    "logsOpenedDesc": "El archivo de registro se ha abierto en tu editor predeterminado.",
+    "notAvailable": "Función no disponible",
+    "notAvailableDesc": "Esta función solo está disponible en modo de producción",
+    "filesDeleted": "{{count}} archivo(s) eliminado(s)",
+    "modsInstalled": "{{count}} mod(s) instalado(s)",
+    "withErrors": ", {{count}} error(es)"
+  }
+}

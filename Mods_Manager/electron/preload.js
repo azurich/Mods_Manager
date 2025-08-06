@@ -2,8 +2,10 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 // Exposer les APIs sécurisées au renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Gestion des instances Minecraft
-  getMinecraftInstances: () => ipcRenderer.invoke('get-minecraft-instances'),
+  // Gestion des instances Minecraft (multi-plateforme)
+  detectLaunchers: () => ipcRenderer.invoke('detect-launchers'),
+  getInstancesForLauncher: (launcherId) => ipcRenderer.invoke('get-instances-for-launcher', launcherId),
+  getMinecraftInstances: () => ipcRenderer.invoke('get-minecraft-instances'), // Rétrocompatibilité
   
   // Sauvegarde et récupération des paramètres
   saveLastInstance: (instanceName) => ipcRenderer.invoke('save-last-instance', instanceName),
@@ -25,6 +27,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // Événements de mise à jour
+  onUpdateChecking: (callback) => {
+    ipcRenderer.on('update-checking', (event) => callback());
+  },
   onUpdateAvailable: (callback) => {
     ipcRenderer.on('update-available', (event, info) => callback(info));
   },
@@ -38,7 +43,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('update-downloaded', (event, info) => callback(info));
   },
   onUpdateDownloadProgress: (callback) => {
-    ipcRenderer.on('download-progress', (event, progress) => callback(progress));
+    ipcRenderer.on('update-download-progress', (event, progress) => callback(progress));
   },
   onUpdateDownloadStarted: (callback) => {
     ipcRenderer.on('update-download-started', (event, info) => callback(info));
@@ -54,5 +59,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // Gestion des logs (support utilisateur)
   openLogFile: () => ipcRenderer.invoke('open-log-file'),
-  getLogContent: () => ipcRenderer.invoke('get-log-content')
+  getLogContent: () => ipcRenderer.invoke('get-log-content'),
+  
+  // Gestion de la configuration distante
+  refreshModsConfig: () => ipcRenderer.invoke('refresh-mods-config'),
+  getConfigInfo: () => ipcRenderer.invoke('get-config-info'),
+  
+  // Gestion des préférences de langue
+  saveLanguagePreference: (language) => ipcRenderer.invoke('save-language-preference', language),
+  getLanguagePreference: () => ipcRenderer.invoke('get-language-preference')
 });

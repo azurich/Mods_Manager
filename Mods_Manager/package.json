@@ -1,10 +1,28 @@
 {
   "name": "mods-manager",
-  "version": "2.0.1",
+  "version": "2.0.6",
   "description": "Gestionnaire de mods Minecraft moderne avec Shadcn UI",
-  "author": "Azurich",
+  "author": {
+    "name": "Azurich",
+    "email": "contact@azurich.fr"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azurich/Mods_Manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/azurich/Mods_Manager/issues"
+  },
+  "homepage": "https://modsmanager.azurich.fr",
+  "keywords": [
+    "minecraft",
+    "mods",
+    "manager",
+    "electron",
+    "modding"
+  ],
   "main": "electron/main.js",
-  "homepage": "./",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"wait-on http://localhost:3001 && npm run dev:electron\"",
     "dev:react": "vite",
@@ -22,6 +40,7 @@
   "build": {
     "appId": "com.azurich.modsmanager",
     "productName": "Mods Manager",
+    "copyright": "© 2024 Azurich. Tous droits réservés.",
     "directories": {
       "output": "dist-electron"
     },
@@ -30,11 +49,21 @@
       "owner": "azurich",
       "repo": "Mods_Manager"
     },
+    "extraMetadata": {
+      "support": {
+        "url": "https://github.com/azurich/Mods_Manager/issues",
+        "email": "contact@azurich.fr",
+        "website": "https://modsmanager.azurich.fr"
+      },
+      "documentation": "https://modsmanager.azurich.fr/docs",
+      "donate": "https://github.com/sponsors/azurich"
+    },
     "files": [
       "dist/**/*",
       "electron/**/*",
       "assets/**/*",
-      "config/**/*"
+      "config/**/*",
+      "build/app-update.yml"
     ],
     "win": {
       "target": [
@@ -45,14 +74,6 @@
         {
           "target": "nsis",
           "arch": "ia32"
-        },
-        {
-          "target": "portable",
-          "arch": "x64"
-        },
-        {
-          "target": "portable",
-          "arch": "ia32"
         }
       ],
       "icon": "assets/app.ico"
@@ -60,21 +81,26 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "allowElevation": true,
-      "createDesktopShortcut": "always",
+      "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "runAfterFinish": true,
+      "artifactName": "Mods-Manager-Setup-${arch}.${ext}",
+      "uninstallDisplayName": "Mods Manager",
+      "deleteAppDataOnUninstall": false,
+      "allowElevation": false,
       "installerIcon": "assets/app.ico",
       "uninstallerIcon": "assets/app.ico",
-      "installerHeaderIcon": "assets/app.ico",
-      "displayLanguageSelector": false,
-      "deleteAppDataOnUninstall": true,
-      "guid": "com.azurich.modsmanager",
+      "runAfterFinish": false,
+      "shortcutName": "Mods Manager",
       "perMachine": false,
-      "artifactName": "Mods-Manager-Setup-${arch}.${ext}"
-    },
-    "portable": {
-      "artifactName": "Mods-Manager-Portable-${arch}.${ext}"
+      "warningsAsErrors": false,
+      "displayLanguageSelector": true,
+      "installerLanguages": [
+        "fr_FR",
+        "en_US"
+      ],
+      "menuCategory": "Games",
+      "guid": "8b3f8b3a-3c4e-4f5a-8b3f-8b3a3c4e4f5a",
+      "differentialPackage": false
     }
   },
   "devDependencies": {
@@ -106,11 +132,16 @@
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "electron-log": "^5.0.1",
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
     "fs-extra": "^11.2.0",
+    "i18next": "^25.3.2",
+    "i18next-fs-backend": "^2.6.0",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^15.6.1",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7"
   }

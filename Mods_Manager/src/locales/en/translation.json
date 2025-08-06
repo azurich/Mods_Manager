@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "Mods Manager",
+    "version": "v{{version}}"
+  },
+  "header": {
+    "checkUpdates": "Check for updates",
+    "settings": "Settings"
+  },
+  "language": {
+    "label": "Language",
+    "french": "Français",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "instances": {
+    "title": "Instance Selection",
+    "selectInstance": "Minecraft Instance",
+    "loading": "Loading instances...",
+    "chooseFirst": "Choose a launcher first below",
+    "selectPlaceholder": "Select an instance...",
+    "none": "No launcher detected"
+  },
+  "launchers": {
+    "detection": "Launcher Detection",
+    "searching": "Scanning for Minecraft launchers..."
+  },
+  "actions": {
+    "cleanup": {
+      "title": "Cleanup",
+      "description": "Removes obsolete old mods from your instance",
+      "button": "Delete old mods",
+      "inProgress": "Cleanup in progress",
+      "removing": "Removing old mods..."
+    },
+    "install": {
+      "title": "Installation",
+      "description": "Downloads and installs the latest available mods",
+      "button": "Install new mods",
+      "inProgress": "Installation in progress",
+      "downloading": "Downloading new mods..."
+    }
+  },
+  "updates": {
+    "checking": "Checking for updates...",
+    "searchingGithub": "Searching for new versions on GitHub",
+    "available": "New version available!",
+    "downloadProgress": "Download in progress...",
+    "ready": "Update ready!",
+    "error": "Update error",
+    "noUpdate": "Application is up to date",
+    "noUpdateDesc": "You're already using the latest available version.",
+    "install": "Install",
+    "restart": "Restart",
+    "later": "Later",
+    "completed": "Completed"
+  },
+  "settings": {
+    "title": "Settings",
+    "information": {
+      "title": "Information",
+      "version": "Version: {{version}}",
+      "developer": "Developed by: Azurich"
+    },
+    "configuration": {
+      "title": "Mods Configuration",
+      "source": "Source: {{source}}",
+      "lastUpdate": "Last update: {{date}}",
+      "never": "Never",
+      "modsInfo": "{{oldMods}} mods to remove • {{newMods}} mods to install • {{configFiles}} config files",
+      "refresh": "Refresh mods configuration",
+      "refreshing": "Refreshing in progress",
+      "refreshDesc": "Downloading mods configuration..."
+    },
+    "actions": {
+      "title": "Actions",
+      "refreshInstances": "Refresh instances",
+      "github": "View on GitHub",
+      "viewLogs": "View logs"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Auto",
+      "systemTooltip": "Automatically follows Windows theme"
+    }
+  },
+  "toasts": {
+    "devMode": "Development mode",
+    "devModeDesc": "Updates are only available in production mode",
+    "instanceMissing": "Instance missing",
+    "instanceMissingDesc": "Please select an instance first",
+    "instanceSelected": "Instance selected",
+    "instanceRestored": "Instance restored",
+    "instanceRestoredDesc": "Previous instance: {{name}}",
+    "loadingError": "Loading error",
+    "loadingErrorDesc": "Unable to load instances: {{error}}",
+    "saveError": "Save error",
+    "saveErrorDesc": "Unable to save instance: {{error}}",
+    "deletionComplete": "Deletion completed",
+    "deletionError": "Deletion error",
+    "deletionErrorDesc": "Unable to delete mods: {{error}}",
+    "installComplete": "Installation completed",
+    "installError": "Installation error",
+    "installErrorDesc": "Unable to install mods: {{error}}",
+    "noLaunchers": "No launcher found",
+    "noLaunchersDesc": "CurseForge and Modrinth not detected.",
+    "launchersDetected": "Launchers detected",
+    "launchersDetectedDesc": "{{count}} launcher(s) found. Select one.",
+    "instancesLoaded": "Instances loaded",
+    "instancesLoadedDesc": "{{count}} {{launcher}} instance(s) found",
+    "configRefreshed": "Configuration refreshed",
+    "configRefreshError": "Refresh error",
+    "logsOpened": "Logs opened",
+    "logsOpenedDesc": "The log file has been opened in your default editor.",
+    "notAvailable": "Feature unavailable",
+    "notAvailableDesc": "This feature is only available in production mode",
+    "filesDeleted": "{{count}} file(s) deleted",
+    "modsInstalled": "{{count}} mod(s) installed",
+    "withErrors": ", {{count}} error(s)"
+  }
+}
