@@ -1,13 +1,11 @@
+![Screenshot](https://r2.e-z.host/4ed8b442-31c9-4738-a919-7ff8dee725df/gqohuyhy.webp)
+
 # Mods Manager
 
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/azurich/Mods_Manager/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
 [![Electron](https://img.shields.io/badge/Electron-28.0.0-47848f.svg)](https://electronjs.org/)
-
-Un outil puissant et intuitif pour gérer vos mods Minecraft, avec système de mise à jour automatique et interface utilisateur moderne construite avec React et Shadcn UI.
-
-![Screenshot](https://r2.e-z.host/4ed8b442-31c9-4738-a919-7ff8dee725df/gqohuyhy.webp)
 
 ## ✨ Fonctionnalités
 
@@ -42,25 +40,24 @@ Un outil puissant et intuitif pour gérer vos mods Minecraft, avec système de m
 Rendez-vous sur la page [Releases](https://github.com/azurich/Mods_Manager/releases) et téléchargez la version correspondant à votre système :
 
 - **`Mods-Manager-Setup-x64.exe`** - Installateur Windows 64 bits
-- **`Mods-Manager-Setup-ia32.exe`** - Installateur Windows 32 bits  
-- **`Mods-Manager-Portable-x64.exe`** - Version portable 64 bits
-- **`Mods-Manager-Portable-ia32.exe`** - Version portable 32 bits
+- **`Mods-Manager-Setup-x86.exe`** - Installateur Windows 32 bits  
 
 ### Prérequis
 - **Windows 10/11** (x64 ou x86)
-- **CurseForge** ou **Modrinth** installé avec des instances Minecraft
-- **Connexion Internet** pour les téléchargements et mises à jour
+- **CurseForge** et/ou **Modrinth** installé avec des instances
+- **Connexion Internet** pour les téléchargements et mises à jour des mods et configs
 
 ## 🚀 Utilisation
 
 ### Première utilisation
 1. **Lancez l'application**
-2. **Sélectionnez une instance** dans la liste déroulante
-3. **Supprimez les anciens mods** (optionnel)
-4. **Installez les nouveaux mods** d'un clic
+2. **Sélectionnez un launcher** bouton CurseForge ou Modrinth
+3. **Sélectionnez une instance** dans la liste déroulante
+4. **Supprimez les anciens mods** (optionnel)
+5. **Installez les nouveaux mods** d'un clic
 
 ### Mises à jour
-L'application vérifie automatiquement les mises à jour au démarrage. Une bannière élégante apparaîtra si une nouvelle version est disponible :
+L'application vérifie automatiquement les mises à jour au démarrage :
 
 - **🚀 Nouvelle version disponible** → Cliquez sur "Installer"
 - **📥 Téléchargement en cours** → Suivez la progression
@@ -120,26 +117,9 @@ npm run build:electron
 
 ## 📋 Configuration des Mods
 
-Les mods gérés sont configurés dans `config/mods-config.json` :
+Les mods gérés sont configurés via le fichier remote-mods-config.json :
 
-```json
-{
-  "oldMods": [
-    "ancien-mod-1.jar",
-    "ancien-mod-2.jar"
-  ],
-  "newMods": {
-    "nouveau-mod.jar": "https://cdn.modrinth.com/data/xxx/nouveau-mod.jar"
-  },
-  "configFiles": [
-    {
-      "filename": "config-mod.toml",
-      "url": "https://raw.githubusercontent.com/user/repo/config-mod.toml",
-      "destination": "config"
-    }
-  ]
-}
-```
+- **🗒️ Exemple de configs* → /remote-mods-config.json"
 
 ## 🔄 Système de Mise à Jour
 
@@ -147,7 +127,7 @@ Le système de mise à jour intelligent :
 
 1. **Vérifie** les nouvelles versions sur GitHub
 2. **Détecte** automatiquement votre architecture et type d'installation
-3. **Télécharge** le bon fichier (portable/setup, 32/64 bits)
+3. **Télécharge** le bon fichier (32/64 bits)
 4. **Installe** automatiquement et redémarre l'application
 
 ### Logs de débogage
@@ -171,13 +151,13 @@ Utilisez les [GitHub Issues](https://github.com/azurich/Mods_Manager/issues) ave
 
 ## 📝 Changelog
 
-### Version 2.0.0 (Dernière)
-- 🎨 **Interface de mise à jour entièrement repensée**
-- 🚀 **Système de mise à jour intelligent** (détection auto 32/64 bits)
-- ✨ **Design moderne** avec animations et transitions
-- 🔧 **Amélioration de la stabilité** et gestion d'erreurs
-- 📱 **Support des thèmes** clair/sombre
-- 🛠️ **Logs détaillés** pour le débogage
+### Version 2.0.6 (Dernière)
+- ✨ **Design moderne**
+- 🚀 **Système de mise à jour automatique**
+- ℹ️ **Support multi-langues**
+- ❇️ **Compatible avec CurseForge et Modrinth**
+- 🌓 **Gestion des thèmes Clair & Sombre**
+- 📝 **Logs détaillés**
 
 [Voir l'historique complet](CHANGELOG.md)
 
@@ -191,19 +171,10 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 - GitHub: [@azurich](https://github.com/azurich)
 - Projet: [Mods_Manager](https://github.com/azurich/Mods_Manager)
 
-## 🙏 Remerciements
-
-- **[Electron](https://electronjs.org/)** - Framework de développement
-- **[React](https://reactjs.org/)** - Bibliothèque UI
-- **[Shadcn UI](https://ui.shadcn.com/)** - Composants UI
-- **[Tailwind CSS](https://tailwindcss.com/)** - Framework CSS
-- **[Lucide React](https://lucide.dev/)** - Icônes
-- **[CurseForge](https://curseforge.com/)** - Plateforme de mods Minecraft
-
 ---
 
 <div align="center">
 
-Made with ❤️ for the Minecraft community
+Built in 🇫🇷
 
 </div>
