@@ -7,7 +7,7 @@
 
 Un outil puissant et intuitif pour gérer vos mods Minecraft, avec système de mise à jour automatique et interface utilisateur moderne construite avec React et Shadcn UI.
 
-![Screenshot](https://r2.e-z.host/4ed8b442-31c9-4738-a919-7ff8dee725df/9kvtszg6.webp)
+![Screenshot](https://r2.e-z.host/4ed8b442-31c9-4738-a919-7ff8dee725df/gqohuyhy.webp)
 
 ## ✨ Fonctionnalités
 
