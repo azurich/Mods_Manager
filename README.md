@@ -2,7 +2,7 @@
 
 # Mods Manager
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/azurich/Mods_Manager/releases)
+[![Version](https://img.shields.io/badge/version-2.0.6-blue.svg)](https://github.com/azurich/Mods_Manager/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
 [![Electron](https://img.shields.io/badge/Electron-28.0.0-47848f.svg)](https://electronjs.org/)
