@@ -18,7 +18,7 @@
 ### 🚀 **Système de Mise à Jour Intelligent**
 - **Détection automatique** des nouvelles versions
 - **Interface élégante** intégrée (fini les popups !)
-- **Téléchargement intelligent** selon votre configuration (32/64 bits, portable/setup)
+- **Téléchargement intelligent** selon votre configuration (32/64 bits)
 - **Installation transparente** avec redémarrage automatique
 - **Barre de progression** en temps réel
 
