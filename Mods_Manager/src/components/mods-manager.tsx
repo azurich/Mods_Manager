@@ -614,7 +614,7 @@ export function ModsManager() {
               <h1 className="text-2xl font-bold">
                 {t('app.title')}
               </h1>
-              <Badge variant="secondary">{t('app.version', { version: '2.0.6' })}</Badge>
+              <Badge variant="secondary">{t('app.version', { version: '2.0.7' })}</Badge>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -988,6 +988,102 @@ export function ModsManager() {
               >
                 {t('language.spanish')}
               </Button>
+              <Button
+                variant={currentLanguage === 'de' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('de')
+                  setCurrentLanguage('de')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['de'],
+                  })
+                }}
+              >
+                {t('language.german')}
+              </Button>
+              <Button
+                variant={currentLanguage === 'pt' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('pt')
+                  setCurrentLanguage('pt')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['pt'],
+                  })
+                }}
+              >
+                {t('language.portuguese')}
+              </Button>
+              <Button
+                variant={currentLanguage === 'ru' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('ru')
+                  setCurrentLanguage('ru')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['ru'],
+                  })
+                }}
+              >
+                {t('language.russian')}
+              </Button>
+              <Button
+                variant={currentLanguage === 'zh' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('zh')
+                  setCurrentLanguage('zh')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['zh'],
+                  })
+                }}
+              >
+                {t('language.chinese')}
+              </Button>
+              <Button
+                variant={currentLanguage === 'ja' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('ja')
+                  setCurrentLanguage('ja')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['ja'],
+                  })
+                }}
+              >
+                {t('language.japanese')}
+              </Button>
+              <Button
+                variant={currentLanguage === 'ko' ? 'default' : 'outline'}
+                className="w-full justify-start"
+                onClick={async () => {
+                  await changeLanguage('ko')
+                  setCurrentLanguage('ko')
+                  setShowLanguageMenu(false)
+                  toast({
+                    variant: "info",
+                    title: t('language.label'),
+                    description: supportedLanguages['ko'],
+                  })
+                }}
+              >
+                {t('language.korean')}
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -1005,7 +1101,7 @@ export function ModsManager() {
                   size="icon"
                   onClick={() => setShowSettings(false)}
                 >
-                  ✕
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
@@ -1013,12 +1109,11 @@ export function ModsManager() {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">{t('settings.information.title')}</h4>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p>{t('settings.information.version', { version: '2.0.6' })}</p>
+                  <p>{t('settings.information.version', { version: '2.0.7' })}</p>
+                  <p>Architecture: {process.arch} ({process.platform})</p>
                   <p>{t('settings.information.developer')}</p>
                 </div>
               </div>
-              
-              
 
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">{t('settings.configuration.title')}</h4>

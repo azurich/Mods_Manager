@@ -1,0 +1,129 @@
+{
+  "app": {
+    "title": "模组管理器",
+    "version": "v{{version}}"
+  },
+  "header": {
+    "checkUpdates": "检查更新",
+    "settings": "设置"
+  },
+  "language": {
+    "label": "语言",
+    "french": "Français",
+    "english": "English",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "portuguese": "Português",
+    "russian": "Русский",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "korean": "한국어"
+  },
+  "instances": {
+    "title": "实例选择",
+    "selectInstance": "Minecraft 实例",
+    "loading": "正在加载实例...",
+    "chooseFirst": "请先选择下方的启动器",
+    "selectPlaceholder": "选择实例...",
+    "none": "未检测到启动器"
+  },
+  "launchers": {
+    "detection": "启动器检测",
+    "searching": "正在搜索 Minecraft 启动器..."
+  },
+  "actions": {
+    "cleanup": {
+      "title": "清理",
+      "description": "从您的实例中删除过时的旧模组",
+      "button": "删除旧模组",
+      "inProgress": "清理进行中",
+      "removing": "正在删除旧模组..."
+    },
+    "install": {
+      "title": "安装",
+      "description": "下载并安装最新可用的模组",
+      "button": "安装新模组",
+      "inProgress": "安装进行中",
+      "downloading": "正在下载新模组..."
+    }
+  },
+  "updates": {
+    "checking": "正在检查更新...",
+    "searchingGithub": "正在 GitHub 上搜索新版本",
+    "available": "有新版本可用！",
+    "downloadProgress": "正在下载...",
+    "ready": "更新准备就绪！",
+    "error": "更新错误",
+    "noUpdate": "应用程序已是最新版本",
+    "noUpdateDesc": "您已在使用最新可用版本。",
+    "install": "安装",
+    "restart": "重启",
+    "later": "稍后",
+    "completed": "已完成"
+  },
+  "settings": {
+    "title": "设置",
+    "information": {
+      "title": "信息",
+      "version": "版本：{{version}}",
+      "developer": "开发者：Azurich"
+    },
+    "configuration": {
+      "title": "模组配置",
+      "source": "来源：{{source}}",
+      "lastUpdate": "最后更新：{{date}}",
+      "never": "从未",
+      "modsInfo": "{{oldMods}} 个模组待删除 • {{newMods}} 个模组待安装 • {{configFiles}} 个配置文件",
+      "refresh": "刷新模组配置",
+      "refreshing": "正在刷新",
+      "refreshDesc": "正在下载模组配置..."
+    },
+    "actions": {
+      "title": "操作",
+      "refreshInstances": "刷新实例",
+      "github": "在 GitHub 上查看",
+      "viewLogs": "查看日志"
+    },
+    "appearance": {
+      "title": "外观",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "自动",
+      "systemTooltip": "自动跟随 Windows 主题"
+    }
+  },
+  "toasts": {
+    "devMode": "开发模式",
+    "devModeDesc": "更新仅在生产模式下可用",
+    "instanceMissing": "实例缺失",
+    "instanceMissingDesc": "请先选择一个实例",
+    "instanceSelected": "已选择实例",
+    "instanceRestored": "实例已恢复",
+    "instanceRestoredDesc": "上次实例：{{name}}",
+    "loadingError": "加载错误",
+    "loadingErrorDesc": "无法加载实例：{{error}}",
+    "saveError": "保存错误",
+    "saveErrorDesc": "无法保存实例：{{error}}",
+    "deletionComplete": "删除完成",
+    "deletionError": "删除错误",
+    "deletionErrorDesc": "无法删除模组：{{error}}",
+    "installComplete": "安装完成",
+    "installError": "安装错误",
+    "installErrorDesc": "无法安装模组：{{error}}",
+    "noLaunchers": "未找到启动器",
+    "noLaunchersDesc": "未检测到 CurseForge 和 Modrinth。",
+    "launchersDetected": "已检测到启动器",
+    "launchersDetectedDesc": "找到 {{count}} 个启动器。请选择一个。",
+    "instancesLoaded": "实例已加载",
+    "instancesLoadedDesc": "找到 {{count}} 个 {{launcher}} 实例",
+    "configRefreshed": "配置已刷新",
+    "configRefreshError": "刷新错误",
+    "logsOpened": "日志已打开",
+    "logsOpenedDesc": "日志文件已在您的默认编辑器中打开。",
+    "notAvailable": "功能不可用",
+    "notAvailableDesc": "此功能仅在生产模式下可用",
+    "filesDeleted": "已删除 {{count}} 个文件",
+    "modsInstalled": "已安装 {{count}} 个模组",
+    "withErrors": "，{{count}} 个错误"
+  }
+}

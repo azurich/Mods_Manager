@@ -49,7 +49,7 @@ const store = new Store();
 
 // Variables globales
 let mainWindow;
-const VERSION = '2.0.6';
+const VERSION = '2.0.7';
 
 // Configuration par défaut (fallback)
 const DEFAULT_CONFIG = {
@@ -528,6 +528,22 @@ autoUpdater.autoInstallOnAppQuit = true;
 autoUpdater.allowPrerelease = false;
 autoUpdater.allowDowngrade = false;
 
+// Forcer le téléchargement complet pour éviter les erreurs 404 sur les fichiers .blockmap
+autoUpdater.disableDifferentialDownload = true;
+
+// Configuration pour installation silencieuse
+if (process.platform === 'win32') {
+    // Sur Windows, utiliser les arguments silencieux NSIS
+    autoUpdater.logger.info('Configuration Windows: installation silencieuse activée');
+    
+    // Configuration pour l'architecture correcte
+    const currentArch = process.arch;
+    console.log(`🏗️ Architecture actuelle: ${currentArch}`);
+    
+    // electron-updater va automatiquement choisir le bon fichier selon l'architecture
+    // Cela fonctionne avec les fichiers séparés x64/ia32
+}
+
 // Désactiver complètement en mode dev
 if (isDev) {
     autoUpdater.updateConfigPath = null;
@@ -606,13 +622,27 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', (info) => {
     console.log('✨ Mise à jour disponible:', info.version);
+    console.log('📋 Info complète:', JSON.stringify(info, null, 2));
+    
+    // Extraire la taille avec plusieurs fallbacks
+    let fileSize = 0;
+    if (info.files && info.files.length > 0) {
+        fileSize = info.files[0].size || info.files[0].blockMapSize || 0;
+    }
+    
+    // Si toujours pas de taille, estimer basé sur un installateur universel typique
+    if (fileSize === 0) {
+        fileSize = 50 * 1024 * 1024; // 50MB estimation pour un installateur Electron typique
+        console.log('⚠️ Taille non détectée, estimation utilisée:', fileSize);
+    }
+    
     updateInfo = info;
     
     if (mainWindow) {
         mainWindow.webContents.send('update-available', {
             version: info.version,
             currentVersion: VERSION,
-            size: info.files?.[0]?.size || 0,
+            size: fileSize,
             releaseDate: info.releaseDate,
             releaseName: info.releaseName
         });
@@ -693,7 +723,23 @@ ipcMain.handle('check-for-updates', () => {
 
 ipcMain.handle('restart-and-install', () => {
     console.log('🔄 Redémarrage et installation...');
-    autoUpdater.quitAndInstall();
+    
+    // Pour Windows, essayer l'installation silencieuse
+    if (process.platform === 'win32') {
+        console.log('💡 Tentative d\'installation silencieuse Windows...');
+        
+        // Modifier les arguments pour electron-updater
+        try {
+            // Forcer l'installation silencieuse
+            autoUpdater.quitAndInstall(true, true);
+            console.log('✅ Installation silencieuse lancée');
+        } catch (error) {
+            console.warn('⚠️ Installation silencieuse échouée, fallback standard:', error);
+            autoUpdater.quitAndInstall();
+        }
+    } else {
+        autoUpdater.quitAndInstall();
+    }
 });
 
 // Gestionnaire pour ouvrir des liens externes

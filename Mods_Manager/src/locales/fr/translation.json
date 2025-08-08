@@ -11,7 +11,13 @@
     "label": "Langue",
     "french": "Français",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "german": "Deutsch",
+    "portuguese": "Português",
+    "russian": "Русский",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "korean": "한국어"
   },
   "instances": {
     "title": "Sélection de l'instance",
@@ -119,5 +125,26 @@
     "filesDeleted": "{{count}} fichier(s) supprimé(s)",
     "modsInstalled": "{{count}} mod(s) installé(s)",
     "withErrors": ", {{count}} erreur(s)"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "information": {
+      "title": "Informations",
+      "version": "Version: {{version}}",
+      "developer": "Développé par Azurich"
+    },
+    "configuration": {
+      "title": "Configuration",
+      "source": "Source: {{source}}",
+      "lastUpdate": "Dernière mise à jour: {{date}}",
+      "never": "Jamais",
+      "modsInfo": "{{oldMods}} anciens mods, {{newMods}} nouveaux mods, {{configFiles}} fichiers de config",
+      "refresh": "Actualiser la configuration"
+    },
+    "tools": {
+      "title": "Outils de développement",
+      "openLogs": "Ouvrir les logs",
+      "openLogsDesc": "Ouvre le fichier de logs pour diagnostics"
+    }
   }
 }

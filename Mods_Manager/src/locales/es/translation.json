@@ -11,7 +11,13 @@
     "label": "Idioma",
     "french": "Français",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "german": "Deutsch",
+    "portuguese": "Português",
+    "russian": "Русский",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "korean": "한국어"
   },
   "instances": {
     "title": "Selección de Instancia",

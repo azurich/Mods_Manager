@@ -1,0 +1,129 @@
+{
+  "app": {
+    "title": "MOD管理ツール",
+    "version": "v{{version}}"
+  },
+  "header": {
+    "checkUpdates": "アップデートを確認",
+    "settings": "設定"
+  },
+  "language": {
+    "label": "言語",
+    "french": "Français",
+    "english": "English",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "portuguese": "Português",
+    "russian": "Русский",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "korean": "한국어"
+  },
+  "instances": {
+    "title": "インスタンス選択",
+    "selectInstance": "Minecraftインスタンス",
+    "loading": "インスタンスを読み込み中...",
+    "chooseFirst": "最初に下記のランチャーを選択してください",
+    "selectPlaceholder": "インスタンスを選択...",
+    "none": "ランチャーが検出されません"
+  },
+  "launchers": {
+    "detection": "ランチャー検出",
+    "searching": "Minecraftランチャーを検索中..."
+  },
+  "actions": {
+    "cleanup": {
+      "title": "クリーンアップ",
+      "description": "インスタンスから古い不要なMODを削除します",
+      "button": "古いMODを削除",
+      "inProgress": "クリーンアップ中",
+      "removing": "古いMODを削除中..."
+    },
+    "install": {
+      "title": "インストール",
+      "description": "利用可能な最新のMODをダウンロードしてインストールします",
+      "button": "新しいMODをインストール",
+      "inProgress": "インストール中",
+      "downloading": "新しいMODをダウンロード中..."
+    }
+  },
+  "updates": {
+    "checking": "アップデートを確認中...",
+    "searchingGithub": "GitHubで新バージョンを検索中",
+    "available": "新しいバージョンが利用可能です！",
+    "downloadProgress": "ダウンロード中...",
+    "ready": "アップデートの準備完了！",
+    "error": "アップデートエラー",
+    "noUpdate": "アプリケーションは最新版です",
+    "noUpdateDesc": "既に最新バージョンをご利用中です。",
+    "install": "インストール",
+    "restart": "再起動",
+    "later": "後で",
+    "completed": "完了"
+  },
+  "settings": {
+    "title": "設定",
+    "information": {
+      "title": "情報",
+      "version": "バージョン：{{version}}",
+      "developer": "開発者：Azurich"
+    },
+    "configuration": {
+      "title": "MOD設定",
+      "source": "ソース：{{source}}",
+      "lastUpdate": "最終更新：{{date}}",
+      "never": "なし",
+      "modsInfo": "削除するMOD：{{oldMods}}個 • インストールするMOD：{{newMods}}個 • 設定ファイル：{{configFiles}}個",
+      "refresh": "MOD設定を更新",
+      "refreshing": "更新中",
+      "refreshDesc": "MOD設定をダウンロード中..."
+    },
+    "actions": {
+      "title": "アクション",
+      "refreshInstances": "インスタンスを更新",
+      "github": "GitHubで表示",
+      "viewLogs": "ログを表示"
+    },
+    "appearance": {
+      "title": "外観",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "自動",
+      "systemTooltip": "Windowsテーマに自動的に従います"
+    }
+  },
+  "toasts": {
+    "devMode": "開発モード",
+    "devModeDesc": "アップデートは本番モードでのみ利用可能です",
+    "instanceMissing": "インスタンスがありません",
+    "instanceMissingDesc": "最初にインスタンスを選択してください",
+    "instanceSelected": "インスタンスを選択しました",
+    "instanceRestored": "インスタンスを復元しました",
+    "instanceRestoredDesc": "前回のインスタンス：{{name}}",
+    "loadingError": "読み込みエラー",
+    "loadingErrorDesc": "インスタンスを読み込めませんでした：{{error}}",
+    "saveError": "保存エラー",
+    "saveErrorDesc": "インスタンスを保存できませんでした：{{error}}",
+    "deletionComplete": "削除完了",
+    "deletionError": "削除エラー",
+    "deletionErrorDesc": "MODを削除できませんでした：{{error}}",
+    "installComplete": "インストール完了",
+    "installError": "インストールエラー",
+    "installErrorDesc": "MODをインストールできませんでした：{{error}}",
+    "noLaunchers": "ランチャーが見つかりません",
+    "noLaunchersDesc": "CurseForgeとModrinthが検出されませんでした。",
+    "launchersDetected": "ランチャーを検出しました",
+    "launchersDetectedDesc": "{{count}}個のランチャーが見つかりました。1つ選択してください。",
+    "instancesLoaded": "インスタンスを読み込みました",
+    "instancesLoadedDesc": "{{launcher}}の{{count}}個のインスタンスが見つかりました",
+    "configRefreshed": "設定を更新しました",
+    "configRefreshError": "更新エラー",
+    "logsOpened": "ログを開きました",
+    "logsOpenedDesc": "ログファイルがデフォルトエディターで開かれました。",
+    "notAvailable": "機能が利用できません",
+    "notAvailableDesc": "この機能は本番モードでのみ利用可能です",
+    "filesDeleted": "{{count}}個のファイルを削除しました",
+    "modsInstalled": "{{count}}個のMODをインストールしました",
+    "withErrors": "、{{count}}個のエラー"
+  }
+}

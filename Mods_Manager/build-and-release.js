@@ -2,7 +2,19 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Script de build et release automatisé\n');
+// ASCII Art et style terminal
+console.clear();
+console.log('\x1b[36m%s\x1b[0m', `
+ ███╗   ███╗ ██████╗ ██████╗ ███████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗ 
+ ████╗ ████║██╔═══██╗██╔══██╗██╔════╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝██╔══██╗
+ ██╔████╔██║██║   ██║██║  ██║███████╗    ██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██████╔╝
+ ██║╚██╔╝██║██║   ██║██║  ██║╚════██║    ██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██╔══██╗
+ ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████║    ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║  ██║
+ ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
+`);
+
+console.log('\x1b[33m%s\x1b[0m', '                            🚀 BUILD & RELEASE AUTOMATION 🚀\n');
+console.log('═'.repeat(100));
 
 // 1. Lire la version actuelle
 const packagePath = path.join(__dirname, 'package.json');
@@ -76,12 +88,12 @@ async function main() {
     if (fs.existsSync(modsManagerPath)) {
       let modsManagerContent = fs.readFileSync(modsManagerPath, 'utf8');
       
-      // Remplacer les versions dans l'interface
-      const badgeRegex = /<Badge variant="secondary">v[\d.]+<\/Badge>/;
-      const versionPRegex = /<p>Version: [\d.]+<\/p>/;
+      // Remplacer les versions dans l'interface (format i18n)
+      const badgeRegex = /<Badge variant="secondary">\{t\('app\.version', \{ version: '[\d.]+' \}\)\}<\/Badge>/;
+      const versionPRegex = /\{t\('settings\.information\.version', \{ version: '[\d.]+' \}\)\}/;
       
-      const newBadgeLine = `<Badge variant="secondary">v${newVersion}</Badge>`;
-      const newVersionPLine = `<p>Version: ${newVersion}</p>`;
+      const newBadgeLine = `<Badge variant="secondary">{t('app.version', { version: '${newVersion}' })}</Badge>`;
+      const newVersionPLine = `{t('settings.information.version', { version: '${newVersion}' })}`;
       
       let updated = false;
       
@@ -107,15 +119,46 @@ async function main() {
       console.log('⚠️  Fichier mods-manager.tsx non trouvé');
     }
     
-    // 6. Build React
+    // 6. Nettoyer le dossier dist-electron
+    console.log('\n🧹 Nettoyage du dossier dist-electron...');
+    const distElectronPath = path.join(__dirname, 'dist-electron');
+    
+    if (fs.existsSync(distElectronPath)) {
+      const files = fs.readdirSync(distElectronPath);
+      let deletedCount = 0;
+      
+      for (const file of files) {
+        const filePath = path.join(distElectronPath, file);
+        try {
+          if (fs.lstatSync(filePath).isDirectory()) {
+            fs.rmSync(filePath, { recursive: true, force: true });
+          } else {
+            fs.unlinkSync(filePath);
+          }
+          deletedCount++;
+        } catch (error) {
+          console.warn(`⚠️  Impossible de supprimer ${file}:`, error.message);
+        }
+      }
+      
+      if (deletedCount > 0) {
+        console.log(`✅ ${deletedCount} fichier(s)/dossier(s) supprimé(s)`);
+      } else {
+        console.log('✅ Dossier déjà vide');
+      }
+    } else {
+      console.log('ℹ️  Dossier dist-electron n\'existe pas encore');
+    }
+    
+    // 7. Build React
     console.log('\n🔨 Build React...');
     execSync('npm run build:react', { stdio: 'inherit' });
     
-    // 7. Build Electron
+    // 8. Build Electron
     console.log('\n📦 Build Electron...');
     execSync('npm run build:electron', { stdio: 'inherit' });
     
-    // 8. Afficher les fichiers générés
+    // 9. Afficher les fichiers générés
     console.log('\n📁 Fichiers générés dans dist-electron/:');
     try {
       const allFiles = require('fs').readdirSync('./dist-electron');
@@ -128,39 +171,32 @@ async function main() {
       console.log('\n📄 Métadonnées electron-updater:');
       ymlFiles.forEach(file => console.log(`   ✅ ${file}`));
       
-      // Vérifier qu'on a bien les deux architectures
-      const hasX64 = exeFiles.some(f => f.includes('x64'));
-      const hasIa32 = exeFiles.some(f => f.includes('ia32'));
+      // Vérifier qu'on a bien l'installateur universel
+      const hasUniversalInstaller = exeFiles.some(f => f === 'Mods-Manager-Setup.exe');
       const hasLatest = ymlFiles.some(f => f.includes('latest'));
       
       console.log('\n🎯 Vérification des builds:');
-      console.log(`   ${hasX64 ? '✅' : '❌'} Installateur x64 (64-bit)`);
-      console.log(`   ${hasIa32 ? '✅' : '❌'} Installateur ia32 (32-bit)`);
+      console.log(`   ${hasUniversalInstaller ? '✅' : '❌'} Installateur universel (x64 + x86)`);
       console.log(`   ${hasLatest ? '✅' : '❌'} Fichier latest.yml pour les mises à jour`);
       
-      if (!hasX64 || !hasIa32 || !hasLatest) {
+      if (!hasUniversalInstaller || !hasLatest) {
         console.log('\n⚠️  Attention: Certains fichiers attendus sont manquants!');
+      } else {
+        console.log('\n🎉 Setup parfait pour electron-updater!');
+        console.log('   ✅ Un seul fichier = pas d\'erreur 404');
+        console.log('   ✅ electron-updater détectera automatiquement l\'architecture');
       }
       
     } catch (error) {
       console.log('   Aucun fichier trouvé dans dist-electron/');
     }
     
-    console.log(`\n✅ Build v${newVersion} terminé avec succès !`);
-    console.log('📁 Les fichiers sont prêts dans le dossier dist-electron/');
-    console.log('🚀 Compatible avec electron-updater pour les mises à jour automatiques');
-    console.log('');
-    console.log('📋 Prochaines étapes:');
-    console.log('   1. Créez une nouvelle release sur GitHub avec le tag v' + newVersion);
-    console.log('   2. Uploadez TOUS les fichiers (.exe + latest.yml) sur GitHub Releases');
-    console.log('   3. Titre suggéré: "Mods Manager v' + newVersion + '"');
-    console.log('   4. Les utilisateurs recevront automatiquement la notification de mise à jour');
-    console.log('   5. Electron-updater gérera les mises à jour automatiquement');
-    console.log('');
-    console.log('🌐 Liens utiles:');
-    console.log('   • Site web: https://modsmanager.azurich.fr');
-    console.log('   • GitHub Releases: https://github.com/azurich/Mods_Manager/releases');
-    console.log('   • Support: contact@azurich.fr');
+    console.log('\x1b[32m%s\x1b[0m', `\n✅ Build v${newVersion} terminé avec succès !`);
+    console.log('\x1b[36m%s\x1b[0m', '📁 Les fichiers sont prêts dans le dossier dist-electron/');
+    console.log('\x1b[35m%s\x1b[0m', '🚀 Compatible avec electron-updater pour les mises à jour automatiques');
+    console.log('\n' + '═'.repeat(100));
+    console.log('\x1b[33m%s\x1b[0m', '🎉 PROCESSUS TERMINÉ AVEC SUCCÈS 🎉');
+    console.log('═'.repeat(100));
     
   } catch (error) {
     console.error('❌ Erreur:', error.message);
