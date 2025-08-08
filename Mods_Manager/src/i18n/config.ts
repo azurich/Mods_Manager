@@ -5,12 +5,6 @@ import { initReactI18next } from 'react-i18next';
 import frTranslation from '../locales/fr/translation.json';
 import enTranslation from '../locales/en/translation.json';
 import esTranslation from '../locales/es/translation.json';
-import deTranslation from '../locales/de/translation.json';
-import ptTranslation from '../locales/pt/translation.json';
-import ruTranslation from '../locales/ru/translation.json';
-import zhTranslation from '../locales/zh/translation.json';
-import jaTranslation from '../locales/ja/translation.json';
-import koTranslation from '../locales/ko/translation.json';
 
 // Fonction pour détecter la langue système
 const getSystemLanguage = (): string => {
@@ -22,12 +16,6 @@ const getSystemLanguage = (): string => {
     if (systemLang.startsWith('en')) return 'en';
     if (systemLang.startsWith('fr')) return 'fr';
     if (systemLang.startsWith('es')) return 'es';
-    if (systemLang.startsWith('de')) return 'de';
-    if (systemLang.startsWith('pt')) return 'pt';
-    if (systemLang.startsWith('ru')) return 'ru';
-    if (systemLang.startsWith('zh')) return 'zh'; // zh-CN, zh-TW
-    if (systemLang.startsWith('ja')) return 'ja';
-    if (systemLang.startsWith('ko')) return 'ko';
     
     // Défaut français
     return 'fr';
@@ -75,24 +63,6 @@ i18n
       },
       es: {
         translation: esTranslation
-      },
-      de: {
-        translation: deTranslation
-      },
-      pt: {
-        translation: ptTranslation
-      },
-      ru: {
-        translation: ruTranslation
-      },
-      zh: {
-        translation: zhTranslation
-      },
-      ja: {
-        translation: jaTranslation
-      },
-      ko: {
-        translation: koTranslation
       }
     },
     lng: getSavedLanguageSync(), // Langue initiale : sauvegardée ou détectée
@@ -151,18 +121,12 @@ export const getCurrentLanguage = (): string => {
 };
 
 // Types pour une meilleure expérience développeur
-export type SupportedLanguages = 'fr' | 'en' | 'es' | 'de' | 'pt' | 'ru' | 'zh' | 'ja' | 'ko';
+export type SupportedLanguages = 'fr' | 'en' | 'es';
 
 export const supportedLanguages: Record<SupportedLanguages, string> = {
   fr: 'Français',
   en: 'English',
-  es: 'Español',
-  de: 'Deutsch',
-  pt: 'Português',
-  ru: 'Русский',
-  zh: '中文',
-  ja: '日本語',
-  ko: '한국어'
+  es: 'Español'
 };
 
 export default i18n;

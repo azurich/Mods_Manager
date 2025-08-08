@@ -11,13 +11,7 @@
     "label": "Language",
     "french": "Français",
     "english": "English",
-    "spanish": "Español",
-    "german": "Deutsch",
-    "portuguese": "Português",
-    "russian": "Русский",
-    "chinese": "中文",
-    "japanese": "日本語",
-    "korean": "한국어"
+    "spanish": "Español"
   },
   "instances": {
     "title": "Instance Selection",
