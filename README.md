@@ -39,8 +39,7 @@
 ### Téléchargement
 Rendez-vous sur la page [Releases](https://github.com/azurich/Mods_Manager/releases) et téléchargez la version correspondant à votre système :
 
-- **`Mods-Manager-Setup-x64.exe`** - Installateur Windows 64 bits
-- **`Mods-Manager-Setup-x86.exe`** - Installateur Windows 32 bits  
+- **`Mods-Manager-Setup.exe`** - Installateur Windows 64/32 bits
 
 ### Prérequis
 - **Windows 10/11** (x64 ou x86)
@@ -135,31 +134,8 @@ Les logs sont sauvegardés dans : `%TEMP%/mods-manager-debug.log`
 
 Accès via l'interface : **Paramètres** → **Voir les logs**
 
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! 
-
-### Comment contribuer
-1. **Fork** le projet
-2. **Créez** une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. **Committez** vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** vers la branche (`git push origin feature/AmazingFeature`)
-5. **Ouvrez** une Pull Request
-
 ### Signaler un bug
 Utilisez les [GitHub Issues](https://github.com/azurich/Mods_Manager/issues) avec le template approprié.
-
-## 📝 Changelog
-
-### Version 2.0.6 (Dernière)
-- ✨ **Design moderne**
-- 🚀 **Système de mise à jour automatique**
-- ℹ️ **Support multi-langues**
-- ❇️ **Compatible avec CurseForge et Modrinth**
-- 🌓 **Gestion des thèmes Clair & Sombre**
-- 📝 **Logs détaillés**
-
-[Voir l'historique complet](CHANGELOG.md)
 
 ## 📄 License
 
